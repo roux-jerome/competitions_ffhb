@@ -1,0 +1,77 @@
+.hero-home {
+  display: flex;
+  position: relative;
+  align-items: center;
+  height: 50%;
+  background-color: black;
+  min-height: 600px;
+}
+
+.hero-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url("/assets/background-image.png");
+
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.hero-container {
+  z-index: 20 !important;
+  padding-top: 8rem !important;
+  padding-bottom: 8rem !important;
+  --bs-gutter-x: 1.5rem;
+  --bs-gutter-y: 0;
+  width: 100%;
+  padding-right: calc(var(--bs-gutter-x) * .5);
+  padding-left: calc(var(--bs-gutter-x) * .5);
+  margin-right: auto;
+  margin-left: auto;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.hero-text {
+  text-align: center;
+  color: var(--mat-badge-text-color);
+
+}
+
+.hero-text h1 {
+  font-size: calc(1.575rem + 3.9vw);
+  line-height: 1.3;
+  font-weight: 700 !important;
+  text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.1);
+}
+
+.hero-search {
+  display: flex;
+  padding-right: 5px;
+  padding-bottom: 6px;
+  padding-top: 5px;
+  border-radius: 10rem;
+  background: #fff;
+  box-shadow: 0 0 1rem rgba(0, 0, 0, 0.15);
+}
+
+.hero-search input {
+  width: 70%; /* Largeur de la barre de recherche */
+  margin: auto;
+  border-style: none;
+  height: calc(1.6em + 1rem + 2px);
+  outline: none;
+  font-size: 1.1rem;
+}
+
+
+.hero-search button {
+  width: 20%;
+}
+
+.club-list {
+  margin-top: 20px; /* Marge pour la liste des clubs */
+}

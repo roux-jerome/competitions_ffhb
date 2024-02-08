@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/gocolly/colly"
 	"html"
+	"log"
 	"os"
 	"strings"
 )
@@ -24,60 +25,102 @@ type Competition struct {
 	} `json:"classements"`
 }
 
+type CompetitionSortie struct {
+	Id      string `json:"id"`
+	Equipes string `json:"equipes"`
+}
+
 func main() {
 
-	var competitions []Competition
-	c := colly.NewCollector(colly.MaxDepth(4))
-	//c := colly.NewCollector(colly.MaxDepth(4), colly.Async(true))
-	//c := colly.NewCollector(colly.MaxDepth(3), colly.Async(true))
-	//c.Limit(&colly.LimitRule{Parallelism: 20})
+	urlsCompetition := recupereLesUrlDesCompetitionsDeLaSaison2024()
 
-	c.OnXML("//sitemapindex/sitemap/loc", func(e *colly.XMLElement) {
-		if strings.Contains(e.Text, "competitions_poules") {
-			err := e.Request.Visit(e.Text)
-			check(err)
-		}
+	aggregatedCompetitions := scrappingDesCompetitions(urlsCompetition)
 
-	})
+	if err := os.MkdirAll("../competitions/", os.ModePerm); err != nil {
+		log.Fatal(err)
+	}
+	for typeCompetition := range aggregatedCompetitions {
+		file, err := os.Create("../competitions/" + typeCompetition + ".json")
+		check(err)
+		jsonCompetitions, err := json.Marshal(aggregatedCompetitions[typeCompetition])
+		_, err = file.Write(jsonCompetitions)
+		check(err)
+		err = file.Sync()
+		check(err)
+		err = file.Close()
+		check(err)
+	}
+}
 
-	c.OnXML("//urlset/url/loc", func(e *colly.XMLElement) {
-		if strings.Contains(e.Text, "saison-2023-2024") {
-			err := e.Request.Visit(e.Text)
-			if err != nil {
-				print("erreur", err)
-				return
-			}
-		}
-	})
+func scrappingDesCompetitions(urlsCompetition []string) map[string][]CompetitionSortie {
+	var aggregatedCompetitions = make(map[string][]CompetitionSortie)
+	collecteurCompetitions := colly.NewCollector(colly.MaxDepth(2), colly.CacheDir("../cache-competitions"))
 
-	c.OnHTML("smartfire-component[name=competitions---mini-classement-or-ads]", func(e *colly.HTMLElement) {
+	collecteurCompetitions.OnHTML("smartfire-component[name=competitions---mini-classement-or-ads]", func(e *colly.HTMLElement) {
+		fmt.Println("Compétition trouvée")
 		unescaped := html.UnescapeString(e.Attr("attributes"))
 		var competition Competition
 		err := json.Unmarshal([]byte(unescaped), &competition)
 		check(err)
-		competitions = append(competitions, competition)
+		var equipes []string
+		for _, equipe := range competition.Classement {
+			equipes = append(equipes, equipe.EquipeLibelle)
+
+		}
+		competitionSortie := CompetitionSortie{
+			competition.UrlCompetitionType + "/" + competition.UrlCompetition + "/poule-" + competition.Poule,
+			strings.Join(equipes, ", "),
+		}
+		valeur, ok := aggregatedCompetitions[competition.UrlCompetitionType]
+		if ok == true {
+			aggregatedCompetitions[competition.UrlCompetitionType] =
+				append(valeur, competitionSortie)
+		} else {
+			aggregatedCompetitions[competition.UrlCompetitionType] = []CompetitionSortie{competitionSortie}
+		}
 	})
 
-	c.OnRequest(func(r *colly.Request) {
-		fmt.Println("Visiting", r.URL.String())
+	collecteurCompetitions.OnError(func(r *colly.Response, err error) {
+		fmt.Println("Problème de récupération de la compétition", r.Request.URL, " statut:", r.StatusCode)
 	})
 
-	c.Visit("https://www.ffhandball.fr/sitemap_index.xml")
-	//c.Wait()
+	collecteurCompetitions.OnRequest(func(r *colly.Request) {
+		fmt.Println("Récupération de la compétition", r.URL.String())
+	})
 
-	fName := "competions.json"
-	file, err := os.Create(fName)
-	check(err)
-	_, err = file.WriteString("[")
-	check(err)
-	jsonCompetitions, err := json.Marshal(competitions)
-	_, err = file.Write(jsonCompetitions)
-	check(err)
-	_, err = file.WriteString("]")
-	check(err)
-	err = file.Sync()
-	check(err)
-	err = file.Close()
-	check(err)
+	for _, urlCompetition := range urlsCompetition {
+		collecteurCompetitions.Visit(urlCompetition)
 
+	}
+	fmt.Println("Fin du scrapping des compétitions")
+	return aggregatedCompetitions
+}
+
+func recupereLesUrlDesCompetitionsDeLaSaison2024() []string {
+	var urlCompetitions []string
+	collecteurURLCompetitions := colly.NewCollector(colly.MaxDepth(3))
+	collecteurURLCompetitions.OnXML("//sitemapindex/sitemap/loc", func(e *colly.XMLElement) {
+		if strings.Contains(e.Text, "competitions_poules") {
+			e.Request.Visit(e.Text)
+		}
+
+	})
+
+	collecteurURLCompetitions.OnXML("//urlset/url/loc", func(e *colly.XMLElement) {
+		if strings.Contains(e.Text, "saison-2023-2024") {
+			urlCompetitions = append(urlCompetitions, e.Text)
+		}
+	})
+	collecteurURLCompetitions.OnError(func(r *colly.Response, err error) {
+		fmt.Println("Problème de récupération du sitemap", r.Request.URL, "statut: ", r.StatusCode)
+	})
+
+	collecteurURLCompetitions.OnRequest(func(r *colly.Request) {
+		fmt.Println("Parcours du sitemap", r.URL.String())
+	})
+
+	collecteurURLCompetitions.Visit("https://www.ffhandball.fr/sitemap_index.xml")
+
+	fmt.Println("Fin du scrapping du sitemap")
+	return urlCompetitions
 }
