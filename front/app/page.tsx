@@ -51,7 +51,7 @@ export default function Home() {
                     </div>
                 </nav>
 
-                <div className="container px-6 py-16 mx-auto">
+                <div className="container px-6 py-1 mx-auto">
                     <div className="items-center lg:flex">
                         <div className="w-full lg:w-1/2">
                             <div className="lg:max-w-lg">
@@ -76,15 +76,18 @@ export default function Home() {
                             </div>
                         </div>
 
+
                         <div className="flex items-center justify-center w-full mt-6 lg:mt-0 lg:w-1/2">
-                            <Image className="w-full h-full max-w-md" src={imageHand} width={500}
-                                   height={500} alt="email illustration vector art"/>
+                            <div className={"hidden" + (competitions.length > 0 ? " md:block" : "block")}>
+                                <Image className="w-full h-full max-w-md" src={imageHand} width={500}
+                                       height={500} alt="email illustration vector art"/>
+                            </div>
                         </div>
                     </div>
                 </div>
             </header>
             <section className="bg-white dark:bg-gray-900">
-                <div className="container px-6 py-10 mx-auto">
+                <div className="container px-6 py-1 mx-auto">
                     {/*        <div className="flex py-4 mt-4 overflow-x-auto overflow-y-hidden md:justify-center dark:border-gray-700">*/}
                     {/*            <button*/}
                     {/*                className="h-12 px-8 py-2 -mb-px text-sm text-center text-blue-600 bg-transparent border-b-2 border-blue-500 sm:text-base dark:border-blue-400 dark:text-blue-300 whitespace-nowrap focus:outline-none">*/}
