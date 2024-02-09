@@ -6,6 +6,7 @@ import {useDebounce} from "use-debounce";
 import index from './index.json';
 import lunr from 'lunr'
 import Result = lunr.Index.Result;
+import Image from "next/image";
 
 export default function Home() {
     const [recherche, setRecherche] = useState("");
@@ -26,7 +27,7 @@ export default function Home() {
                 <nav className="border-t-4 border-blue-500">
                     <div className="container flex items-center justify-between px-6 py-3 mx-auto">
                         <a href="#">
-                            <img className="w-auto h-6 sm:h-7" src="/icon-handball.png" alt=""/>
+                            <Image className="w-auto h-6 sm:h-7" src="/icon-handball.png" alt=""/>
                         </a>
 
                         <LiensFfhb></LiensFfhb>
@@ -41,7 +42,7 @@ export default function Home() {
                                 <h1 className="text-3xl font-semibold text-gray-800 dark:text-white lg:text-4xl">Recherche ton club sur <span
                                     className="text-blue-500">FFHandball</span></h1>
 
-                                <p className="mt-3 text-gray-600 dark:text-gray-400">Toi aussi tu n'en peux plus de rechercher sur le site de la Fédération française de
+                                <p className="mt-3 text-gray-600 dark:text-gray-400">Toi aussi tu n&apos;en peux plus de rechercher sur le site de la Fédération française de
                                     handball. <span
                                         className="font-medium text-blue-500">Alors cet outils est fait pour toi</span></p>
 
@@ -59,7 +60,7 @@ export default function Home() {
                         </div>
 
                         <div className="flex items-center justify-center w-full mt-6 lg:mt-0 lg:w-1/2">
-                            <img className="w-full h-full max-w-md" src="/hand.png" alt="email illustration vector art"/>
+                            <Image className="w-full h-full max-w-md" src="/hand.png" alt="email illustration vector art"/>
                         </div>
                     </div>
                 </div>
