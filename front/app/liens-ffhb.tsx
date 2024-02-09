@@ -1,6 +1,6 @@
 export default function LiensFfhb(){
 
-  return (<a className="my-1 text-sm font-medium text-gray-500 rtl:-scale-x-100 dark:text-gray-200 hover:text-blue-500 dark:hover:text-blue-400 lg:mx-4 lg:my-0" href="#">
+  return (<a className="my-1 text-sm font-medium text-gray-500 rtl:-scale-x-100 dark:text-gray-200 hover:text-blue-500 dark:hover:text-blue-400 lg:mx-4 lg:my-0" href="https://www.ffhandball.fr/">
       <svg width="178" height="55" viewBox="0 0 178 55" fill="none" xmlns="http://www.w3.org/2000/svg">
         <g clipPath="url(#clip0_1140_41724)">
           <path

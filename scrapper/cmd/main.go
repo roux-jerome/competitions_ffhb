@@ -64,7 +64,7 @@ func scrappingDesCompetitions(urlsCompetition []string) map[string][]Competition
 		check(err)
 		var equipes []string
 		for _, equipe := range competition.Classement {
-			equipes = append(equipes, equipe.EquipeLibelle)
+			equipes = append(equipes, strings.ReplaceAll(equipe.EquipeLibelle, " ", "_"))
 
 		}
 		competitionSortie := CompetitionSortie{

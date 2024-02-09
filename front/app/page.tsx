@@ -1,34 +1,47 @@
 'use client'
 
 import LiensFfhb from "@/app/liens-ffhb";
-import {useEffect, useState} from "react";
-import {useDebounce} from "use-debounce";
+import {ChangeEvent, useState} from "react";
+import {useDebouncedCallback} from "use-debounce";
 import index from './index.json';
 import lunr from 'lunr'
-import Result = lunr.Index.Result;
 import Image from "next/image";
 import imageHand from "./hand.png"
 import iconimageHand from "./icon-handball.png"
+import {Competition} from "@/app/competition";
+import Resultats from "@/app/resultats";
 
 export default function Home() {
-    const [recherche, setRecherche] = useState("");
-    const [competitions, setEquipes] = useState([]);
-    const [debouncedRecherche] = useDebounce(recherche, 500);
+    const [competitions, setCompetitions] = useState([] as Competition[]);
     const idx = lunr.Index.load(index)
-    useEffect(() => {
-        if (debouncedRecherche) {
-            let resultat = idx.search(`*${debouncedRecherche}*`);
-            console.log(resultat)
-        }
-    })
+    const [champsRecherche, setChampsRecherche] = useState("");
+    const recherche = useDebouncedCallback(
+        (recherche: string) => {
+            if (recherche) {
+                let rechercheFuzzy = recherche.replaceAll(" ", "*_*")
+                let results = idx.search(`*${rechercheFuzzy}*`);
+                setCompetitions(
+                    results
+                        .map((resultat) => new Competition(resultat))
+                        .toSorted((a, b) => a.ordre - b.ordre).reverse()
+                );
+            }
+        },
+        1000
+    );
 
+
+    function changeLaValeurDeLaRecherche(e: ChangeEvent<HTMLInputElement>) {
+        setChampsRecherche(e.target.value)
+        recherche(e.target.value);
+    }
 
     return (
         <>
             <header className="bg-white dark:bg-gray-900">
                 <nav className="border-t-4 border-blue-500">
                     <div className="container flex items-center justify-between px-6 py-3 mx-auto">
-                        <a href="#">
+                        <a href="">
                             <Image className="w-auto h-6 sm:h-7" src={iconimageHand} width={450}
                                    height={64} alt=""/>
                         </a>
@@ -52,7 +65,8 @@ export default function Home() {
                                 <div className="flex flex-col mt-6 space-y-3 lg:space-y-0 lg:flex-row">
                                     <div className="relative w-full z-0">
                                         <input id="club" type="text"
-                                               onChange={(e) => setRecherche(e.target.value)}
+                                               value={champsRecherche}
+                                               onChange={changeLaValeurDeLaRecherche}
                                                className="block p-3 text-lg w-full bg-transparent text-gray-700 border rounded-full focus:border-blue-400 focus:outline-none focus:ring focus:ring-opacity-40 focus:ring-blue-300"
                                                placeholder=" "/>
                                         <label htmlFor="club"
@@ -71,59 +85,33 @@ export default function Home() {
             </header>
             <section className="bg-white dark:bg-gray-900">
                 <div className="container px-6 py-10 mx-auto">
-                    <div className="flex py-4 mt-4 overflow-x-auto overflow-y-hidden md:justify-center dark:border-gray-700">
-                        <button
-                            className="h-12 px-8 py-2 -mb-px text-sm text-center text-blue-600 bg-transparent border-b-2 border-blue-500 sm:text-base dark:border-blue-400 dark:text-blue-300 whitespace-nowrap focus:outline-none">
-                            Animation
-                        </button>
+                    {/*        <div className="flex py-4 mt-4 overflow-x-auto overflow-y-hidden md:justify-center dark:border-gray-700">*/}
+                    {/*            <button*/}
+                    {/*                className="h-12 px-8 py-2 -mb-px text-sm text-center text-blue-600 bg-transparent border-b-2 border-blue-500 sm:text-base dark:border-blue-400 dark:text-blue-300 whitespace-nowrap focus:outline-none">*/}
+                    {/*                Animation*/}
+                    {/*            </button>*/}
 
-                        <button
-                            className="h-12 px-8 py-2 -mb-px text-sm text-center text-gray-700 bg-transparent border-b-2 border-gray-200 sm:text-base dark:text-white whitespace-nowrap cursor-base focus:outline-none dark:border-gray-700 dark:hover:border-gray-400 hover:border-gray-400">
-                            Web design
-                        </button>
+                    {/*            <button*/}
+                    {/*                className="h-12 px-8 py-2 -mb-px text-sm text-center text-gray-700 bg-transparent border-b-2 border-gray-200 sm:text-base dark:text-white whitespace-nowrap cursor-base focus:outline-none dark:border-gray-700 dark:hover:border-gray-400 hover:border-gray-400">*/}
+                    {/*                Web design*/}
+                    {/*            </button>*/}
 
-                        <button
-                            className="h-12 px-8 py-2 -mb-px text-sm text-center text-gray-700 bg-transparent border-b-2 border-gray-200 sm:text-base dark:text-white whitespace-nowrap cursor-base focus:outline-none dark:border-gray-700 dark:hover:border-gray-400 hover:border-gray-400">
-                            App design
-                        </button>
+                    {/*            <button*/}
+                    {/*                className="h-12 px-8 py-2 -mb-px text-sm text-center text-gray-700 bg-transparent border-b-2 border-gray-200 sm:text-base dark:text-white whitespace-nowrap cursor-base focus:outline-none dark:border-gray-700 dark:hover:border-gray-400 hover:border-gray-400">*/}
+                    {/*                App design*/}
+                    {/*            </button>*/}
 
-                        <button
-                            className="h-12 px-8 py-2 -mb-px text-sm text-center text-gray-700 bg-transparent border-b-2 border-gray-200 sm:text-base dark:text-white whitespace-nowrap cursor-base focus:outline-none dark:border-gray-700 dark:hover:border-gray-400 hover:border-gray-400">
-                            Branding
-                        </button>
-                    </div>
+                    {/*            <button*/}
+                    {/*                className="h-12 px-8 py-2 -mb-px text-sm text-center text-gray-700 bg-transparent border-b-2 border-gray-200 sm:text-base dark:text-white whitespace-nowrap cursor-base focus:outline-none dark:border-gray-700 dark:hover:border-gray-400 hover:border-gray-400">*/}
+                    {/*                Branding*/}
+                    {/*            </button>*/}
+                    {/*        </div>*/}
+                    <Resultats competitions={competitions}/>
 
-                    <section className="bg-white dark:bg-gray-900">
-                        <div className="container px-6 py-12 mx-auto">
-                            <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
-
-
-                                <div className="max-w-2xl px-8 py-4 bg-white rounded-lg shadow-md dark:bg-gray-800">
-                                    <div className="flex items-center justify-between">
-                                        <span className="text-sm font-light text-gray-600 dark:text-gray-400">Mar 10, 2019</span>
-                                        <a className="px-3 py-1 text-sm font-bold text-gray-100 transition-colors duration-300 transform bg-gray-600 rounded cursor-pointer hover:bg-gray-500"
-                                           tabIndex={0} role="button">Design</a>
-                                    </div>
-
-                                    <div className="mt-2">
-                                        <p className="mt-2 text-gray-600 dark:text-gray-300">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Tempora expedita dicta totam
-                                            aspernatur doloremque. Excepturi iste iusto eos enim reprehenderit nisi, accusamus delectus nihil quis facere in modi ratione
-                                            libero!</p>
-                                    </div>
-
-                                    <div className="flex items-center justify-between mt-4">
-                                        <a href="#" className="text-blue-600 dark:text-blue-400 hover:underline" tabIndex={0} role="link">Ouvrir </a>
-
-
-                                    </div>
-                                </div>
-
-
-                            </div>
-                        </div>
-                    </section>
                 </div>
             </section>
         </>
     );
 }
+
+
