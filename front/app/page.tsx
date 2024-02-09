@@ -7,6 +7,8 @@ import index from './index.json';
 import lunr from 'lunr'
 import Result = lunr.Index.Result;
 import Image from "next/image";
+import imageHand from "./hand.png"
+import iconimageHand from "./icon-handball.png"
 
 export default function Home() {
     const [recherche, setRecherche] = useState("");
@@ -14,7 +16,7 @@ export default function Home() {
     const [debouncedRecherche] = useDebounce(recherche, 500);
     const idx = lunr.Index.load(index)
     useEffect(() => {
-        if(debouncedRecherche){
+        if (debouncedRecherche) {
             let resultat = idx.search(`*${debouncedRecherche}*`);
             console.log(resultat)
         }
@@ -27,7 +29,8 @@ export default function Home() {
                 <nav className="border-t-4 border-blue-500">
                     <div className="container flex items-center justify-between px-6 py-3 mx-auto">
                         <a href="#">
-                            <Image className="w-auto h-6 sm:h-7" src="/icon-handball.png" alt=""/>
+                            <Image className="w-auto h-6 sm:h-7" src={iconimageHand} width={450}
+                                   height={64} alt=""/>
                         </a>
 
                         <LiensFfhb></LiensFfhb>
@@ -60,7 +63,8 @@ export default function Home() {
                         </div>
 
                         <div className="flex items-center justify-center w-full mt-6 lg:mt-0 lg:w-1/2">
-                            <Image className="w-full h-full max-w-md" src="/hand.png" alt="email illustration vector art"/>
+                            <Image className="w-full h-full max-w-md" src={imageHand} width={500}
+                                   height={500} alt="email illustration vector art"/>
                         </div>
                     </div>
                 </div>
