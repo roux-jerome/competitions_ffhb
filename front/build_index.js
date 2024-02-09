@@ -15,4 +15,4 @@ var idx = lunr(function () {
   })
 });
 
-fs.writeFileSync("./src/assets/index.json", JSON.stringify(idx))
+fs.writeFileSync("./app/index.json", JSON.stringify(idx))
