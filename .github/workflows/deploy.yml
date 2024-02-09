@@ -25,7 +25,7 @@ jobs:
         uses: actions/configure-pages@v4
         with:
           static_site_generator: next
-          generator_config_file: front/next.config.js
+          generator_config_file: front/next.config.mjs
       - name: Install and build
         run: |
           cd front
