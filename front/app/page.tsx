@@ -18,7 +18,9 @@ export default function Home() {
     const recherche = useDebouncedCallback(
         (recherche: string) => {
             if (recherche) {
-                let rechercheFuzzy = recherche.normalize("NFC").replaceAll(" ", "*_*")
+                let rechercheFuzzy = recherche
+                    .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+                    .replaceAll(" ", "*_*")
                 let results = idx.search(`*${rechercheFuzzy}*`);
                 setCompetitions(
                     results
