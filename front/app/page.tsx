@@ -60,7 +60,7 @@ export default function Home() {
 
                                 <p className="mt-3 text-gray-600 dark:text-gray-400">Toi aussi tu n&apos;en peux plus de rechercher sur le site de la Fédération française de
                                     handball. <span
-                                        className="font-medium text-blue-500">Alors cet outils est fait pour toi</span></p>
+                                        className="font-medium text-blue-500">Alors cet outil est fait pour toi</span></p>
 
                                 <div className="flex flex-col mt-6 space-y-3 lg:space-y-0 lg:flex-row">
                                     <div className="relative w-full z-0">
