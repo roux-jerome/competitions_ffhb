@@ -1,7 +1,7 @@
 'use client'
 
 import LiensFfhb from "@/app/liens-ffhb";
-import {ChangeEvent, useEffect, useState} from "react";
+import {ChangeEvent, useEffect, useRef, useState} from "react";
 import {useDebouncedCallback} from "use-debounce";
 import _poules from './poules.json';
 import lunr from 'lunr'
@@ -45,6 +45,8 @@ export default function Home() {
         },
         1000
     );
+    const sectionRecherche = useRef<HTMLElement| null>(null);
+    const inputChampsRecherche = useRef<HTMLInputElement| null>(null);
 
     useEffect(() => {
         setIndex(new LunrWrapper(
@@ -94,9 +96,15 @@ export default function Home() {
 
                                 <div className="flex flex-col mt-6 space-y-3 lg:space-y-0 lg:flex-row">
                                     <div className="relative w-full z-0">
-                                        <input id="club" type="search"
+                                        <input id="club" ref={inputChampsRecherche} type="search"
                                                value={champsRecherche}
                                                onChange={changeLaValeurDeLaRecherche}
+                                               onKeyDown={(e)=>{
+                                                   if(e.key == 'Enter'){
+                                                       inputChampsRecherche?.current?.blur();
+                                                       sectionRecherche?.current?.scrollIntoView({behavior: 'smooth'});
+                                                   }
+                                               }}
                                                className="block p-3 text-lg w-full bg-transparent text-gray-700 border rounded-full focus:border-blue-400 focus:outline-none focus:ring focus:ring-opacity-40 focus:ring-blue-300"
                                                placeholder=" "/>
                                         <label htmlFor="club"
@@ -123,7 +131,7 @@ export default function Home() {
                     </div>
                 </div>
             </header>
-            <section className="bg-white dark:bg-gray-900">
+            <section ref={sectionRecherche} className="bg-white dark:bg-gray-900">
                 <div className="container px-6 py-1 mx-auto">
                     {/*        <div className="flex py-4 mt-4 overflow-x-auto overflow-y-hidden md:justify-center dark:border-gray-700">*/}
                     {/*            <button*/}
