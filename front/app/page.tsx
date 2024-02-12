@@ -1,19 +1,31 @@
 'use client'
 
 import LiensFfhb from "@/app/liens-ffhb";
-import {ChangeEvent, useState} from "react";
+import {ChangeEvent, useEffect, useState} from "react";
 import {useDebouncedCallback} from "use-debounce";
-import index from './index.json';
+import _poules from './poules.json';
 import lunr from 'lunr'
 import Image from "next/image";
 import imageHand from "./hand.png"
 import iconimageHand from "./icon-handball.png"
-import {Competition} from "@/app/competition";
 import Resultats from "@/app/resultats";
+import {Poule} from "@/app/poule";
+import {Competitions} from "@/app/competitions";
+
+const poules = _poules as Poule[]
+
+class LunrWrapper {
+    constructor(
+        public readonly index: lunr.Index
+    ) {
+    }
+
+}
 
 export default function Home() {
-    const [competitions, setCompetitions] = useState([] as Competition[]);
-    const idx = lunr.Index.load(index)
+    const [competitionsTrouvees, setCompetitionsTrouvees] = useState(new Competitions());
+    const [index, setIndex] = useState(new LunrWrapper(lunr(() => {
+    })));
     const [champsRecherche, setChampsRecherche] = useState("");
     const recherche = useDebouncedCallback(
         (recherche: string) => {
@@ -21,16 +33,32 @@ export default function Home() {
                 let rechercheFuzzy = recherche
                     .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
                     .replaceAll(" ", "*_*")
-                let results = idx.search(`*${rechercheFuzzy}*`);
-                setCompetitions(
-                    results
-                        .map((resultat) => new Competition(resultat))
-                        .toSorted((a, b) => a.ordre - b.ordre).reverse()
-                );
+                let competitions = new Competitions();
+                index.index.search(`*${rechercheFuzzy}*`)
+                    .forEach((resultat) => {
+                        competitions.ajoute(Object.keys(resultat.matchData.metadata).join(" "), poules[Number(resultat.ref)])
+                    });
+
+
+                setCompetitionsTrouvees(competitions);
             }
         },
         1000
     );
+
+    useEffect(() => {
+        setIndex(new LunrWrapper(
+            lunr(function () {
+                this.ref('index')
+                this.field('recherche')
+                poules.forEach((doc) => {
+                    this.add(doc)
+                })
+            })
+        ))
+
+
+    }, []);
 
 
     function changeLaValeurDeLaRecherche(e: ChangeEvent<HTMLInputElement>) {
@@ -66,20 +94,20 @@ export default function Home() {
 
                                 <div className="flex flex-col mt-6 space-y-3 lg:space-y-0 lg:flex-row">
                                     <div className="relative w-full z-0">
-                                        <input id="club" type="text"
+                                        <input id="club" type="search"
                                                value={champsRecherche}
                                                onChange={changeLaValeurDeLaRecherche}
                                                className="block p-3 text-lg w-full bg-transparent text-gray-700 border rounded-full focus:border-blue-400 focus:outline-none focus:ring focus:ring-opacity-40 focus:ring-blue-300"
                                                placeholder=" "/>
                                         <label htmlFor="club"
                                                className="absolute top-0 p-4 origin-0 duration-300 -z-1 bg-white text-gray-500">Saisie ton club</label>
-                                        <button type="submit" className="absolute right-6 top-4">
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5"
-                                                 stroke="currentColor" className="w-6 h-6">
-                                                <path strokeLinecap="round" strokeLinejoin="round"
-                                                      d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/>
-                                            </svg>
-                                        </button>
+                                        {/*<button type="submit" className="absolute right-6 top-4">*/}
+                                        {/*    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5"*/}
+                                        {/*         stroke="currentColor" className="w-6 h-6">*/}
+                                        {/*        <path strokeLinecap="round" strokeLinejoin="round"*/}
+                                        {/*              d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/>*/}
+                                        {/*    </svg>*/}
+                                        {/*</button>*/}
                                     </div>
                                 </div>
                             </div>
@@ -87,7 +115,7 @@ export default function Home() {
 
 
                         <div className="flex items-center justify-center w-full mt-6 lg:mt-0 lg:w-1/2">
-                            <div className={"hidden" + (competitions.length > 0 ? " md:block" : "block")}>
+                            <div className={"hidden" + (competitionsTrouvees.liste.length > 0 ? " md:block" : "block")}>
                                 <Image className="w-full h-full max-w-md" src={imageHand} width={500}
                                        height={500} alt="email illustration vector art"/>
                             </div>
@@ -118,7 +146,7 @@ export default function Home() {
                     {/*                Branding*/}
                     {/*            </button>*/}
                     {/*        </div>*/}
-                    <Resultats competitions={competitions}/>
+                    <Resultats competitions={competitionsTrouvees}/>
 
                 </div>
             </section>
