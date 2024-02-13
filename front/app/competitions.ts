@@ -69,7 +69,6 @@ export class Competition {
         let chaineContenantDesTags = details[1];
         let formatageTexte = chaineContenantDesTags.split("-");
         formatageTexte.pop()
-        console.log(formatageTexte)
         this.tags.push(details[0].replaceAll("-", " "));
 
         ["masculin", "feminin", "u18", "u15", "u13", "u11"].forEach((tagAChercher: string) => {
