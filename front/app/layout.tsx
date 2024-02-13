@@ -6,7 +6,7 @@ import { Analytics } from '@vercel/analytics/react';
 const inter = Inter({subsets: ["latin"]});
 
 export const metadata: Metadata = {
-    title: "Recherche sur ffhb",
+    title: "Recherche FFHB",
     description: "Recherche ton équipe sur le site de la Fédération Française de handball ",
 };
 
