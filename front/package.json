@@ -11,6 +11,7 @@
     "deploy": "gh-pages -d build"
   },
   "dependencies": {
+    "@vercel/speed-insights": "^1.0.9",
     "lunr": "^2.3.9",
     "next": "14.1.0",
     "react": "^18",

@@ -124,8 +124,7 @@ export default function Home() {
 
                         <div className="flex items-center justify-center w-full mt-6 lg:mt-0 lg:w-1/2">
                             <div className={"hidden" + (competitionsTrouvees.liste.length > 0 ? " md:block" : "block")}>
-                                <Image className="w-full h-full max-w-md" src={imageHand} width={500}
-                                       height={500} alt="email illustration vector art"/>
+                                <Image className="w-full h-full max-w-md" src={imageHand} alt="email illustration vector art"/>
                             </div>
                         </div>
                     </div>
