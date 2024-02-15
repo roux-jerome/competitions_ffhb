@@ -73,7 +73,7 @@ func main() {
 
 	aggregatedCompetitions := scrappingDesCompetitions(urlsCompetition)
 
-	file, err := os.Create("../front/app/poules.json")
+	file, err := os.Create("../front/app/lib/poules.json")
 	check(err)
 	jsonCompetitions, err := json.Marshal(aggregatedCompetitions)
 	_, err = file.Write(jsonCompetitions)
