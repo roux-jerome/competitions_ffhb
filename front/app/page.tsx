@@ -45,8 +45,8 @@ export default function Home() {
         },
         1000
     );
-    const sectionRecherche = useRef<HTMLElement| null>(null);
-    const inputChampsRecherche = useRef<HTMLInputElement| null>(null);
+    const sectionRecherche = useRef<HTMLElement | null>(null);
+    const inputChampsRecherche = useRef<HTMLInputElement | null>(null);
 
     useEffect(() => {
         setIndex(new LunrWrapper(
@@ -99,8 +99,8 @@ export default function Home() {
                                         <input id="club" ref={inputChampsRecherche} type="search"
                                                value={champsRecherche}
                                                onChange={changeLaValeurDeLaRecherche}
-                                               onKeyDown={(e)=>{
-                                                   if(e.key == 'Enter'){
+                                               onKeyDown={(e) => {
+                                                   if (e.key == 'Enter') {
                                                        inputChampsRecherche?.current?.blur();
                                                        sectionRecherche?.current?.scrollIntoView({behavior: 'smooth'});
                                                    }

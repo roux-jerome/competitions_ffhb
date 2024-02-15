@@ -6,12 +6,12 @@ export class Competitions {
 
     public ajoute = (equipe: string, poule: Poule) => {
         let urlPoule = poule.url.split("/");
-        let urlCompetition = `${urlPoule[0]}/${urlPoule[1]}`
+        let urlCompetitionEtEquipe = `${equipe}/${urlPoule[0]}/${urlPoule[1]}`
         let equipeFormatee = equipe.replaceAll("_", " ")
-        if (this._competitions.has(urlCompetition)) {
-            this._competitions.get(urlCompetition)?.ajoute(poule)
+        if (this._competitions.has(urlCompetitionEtEquipe)) {
+            this._competitions.get(urlCompetitionEtEquipe)?.ajoute(poule)
         } else {
-            this._competitions.set(urlCompetition, new Competition(equipeFormatee, poule))
+            this._competitions.set(urlCompetitionEtEquipe, new Competition(equipeFormatee, poule))
         }
     }
 
