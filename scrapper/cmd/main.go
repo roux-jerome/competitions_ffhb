@@ -194,7 +194,8 @@ func recupereLesUrlDesCompetitionsDeLaSaison2024() []string {
 		fmt.Println("Parcours du sitemap", r.URL.String())
 	})
 
-	collecteurURLCompetitions.Visit("https://www.ffhandball.fr/sitemap_index.xml")
+	err := collecteurURLCompetitions.Visit("https://www.ffhandball.fr/sitemap_index.xml")
+	check(err)
 
 	fmt.Println("Fin du scrapping du sitemap")
 	return urlCompetitions
