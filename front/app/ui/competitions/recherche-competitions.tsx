@@ -3,7 +3,7 @@
 import {Competitions} from "@/app/lib/competitions";
 import Image from "next/image";
 import imageHand from "./hand.png";
-import {ChangeEvent, KeyboardEvent, KeyboardEventHandler, useEffect, useRef, useState} from "react";
+import {ChangeEvent, KeyboardEvent, useEffect, useRef, useState} from "react";
 import LunrWrapper from "@/app/lib/lunrWrapper";
 import lunr from "lunr";
 import {useDebouncedCallback} from "use-debounce";
@@ -86,7 +86,7 @@ export default function RechercheCompetitions() {
                                        className="block p-3 text-lg w-full bg-transparent text-gray-700 border rounded-full focus:border-blue-400 focus:outline-none focus:ring focus:ring-opacity-40 focus:ring-blue-300"
                                        placeholder=" "/>
                                 <label htmlFor="club"
-                                       className="absolute top-0 p-4 origin-0 duration-300 -z-1 bg-white text-gray-500">Saisie ton club</label>
+                                       className="absolute top-0 p-4 origin-0 duration-300 -z-1 bg-white text-gray-500">Saisis ton club</label>
                             </div>
                         </div>
                     </div>
