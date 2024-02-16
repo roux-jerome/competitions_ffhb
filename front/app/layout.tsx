@@ -19,7 +19,7 @@ export default function RootLayout({
         <html lang="en">
         <Analytics/>
         <body className={inter.className}>
-            {children}
+        {children}
         </body>
         </html>
     );

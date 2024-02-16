@@ -1,12 +1,20 @@
-import RechercheCompetitions from "@/app/ui/competitions/recherche-competitions";
 import {Entete} from "@/app/ui/entete";
+import RechercheCompetitions from "@/app/ui/competitions/recherche-competitions";
 
 
-export default function Home() {
+export default async function Home({
+                                 searchParams,
+                             }: {
+    searchParams?: {
+        recherche?: string;
+    };
+}) {
+
+    const recherche = searchParams?.recherche || '';
     return (
         <>
             <Entete/>
-            <RechercheCompetitions/>
+            <RechercheCompetitions recherche={recherche}/>
         </>
     );
 }
