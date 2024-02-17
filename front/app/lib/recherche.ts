@@ -89,13 +89,13 @@ export class Resultat {
         } else {
             this._competitions.set(urlCompetitionEtEquipe, new Competition(equipeFormatee, poule))
         }
-        let nomDuClub = equipeFormatee.toUpperCase().replace(/\d$/, '').trim()
+        let nomDuClub = equipeFormatee.toUpperCase().replace(/ [0-9]+$/, '').trim()
         if (!this._clubs.has(nomDuClub)) {
             this._clubs.set(
                 nomDuClub,
                 poule.equipes
                     ?.map(equipe => ({
-                            libelle: equipe.libelle.replace(/\d$/, '').trim(),
+                            libelle: equipe.libelle.replace(/ [0-9]+/, '').trim(),
                             logo:
                             equipe.logo
                         } as Equipe)
