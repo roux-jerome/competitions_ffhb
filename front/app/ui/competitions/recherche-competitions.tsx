@@ -2,7 +2,7 @@ import Image from "next/image";
 import imageHand from "@/app/ui/competitions/hand.png";
 import {Recherche} from "@/app/ui/competitions/recherche";
 import {Suspense} from "react";
-import CartesCompetitions from "@/app/ui/competitions/cartes-competitions";
+import ResultatRecherche from "@/app/ui/competitions/resultat-recherche";
 
 export default async function RechercheCompetitions({recherche}: { recherche: string }) {
 
@@ -35,9 +35,11 @@ export default async function RechercheCompetitions({recherche}: { recherche: st
         </div>
         {recherche != '' &&
             <section className="bg-white dark:bg-gray-900">
+
                 <div className="container px-6 py-1 mx-auto">
+
                     <Suspense key={recherche} fallback={<div>loading...</div>}>
-                        <CartesCompetitions query={recherche}/>
+                        <ResultatRecherche query={recherche}/>
                     </Suspense>
                 </div>
             </section>

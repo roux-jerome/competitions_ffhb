@@ -43,6 +43,7 @@ type JourneeSelector struct {
 type Journee struct {
 	Numero    int    `json:"journee_numero"`
 	DateDebut string `json:"date_debut"`
+	DateFin   string `json:"date_fin"`
 }
 
 type PouleSelector struct {
@@ -57,14 +58,15 @@ type Equipe struct {
 }
 
 type Poule struct {
-	Index                  int    `json:"index"`
-	Url                    string `json:"url"`
-	LibelleCompetition     string `json:"libelleCompetition"`
-	SousTitreCompetition   string `json:"sousTitreCompetition"`
-	Nom                    string `json:"nom"`
-	Phase                  string `json:"phase"`
-	Recherche              string `json:"recherche"`
-	DateJourneeSelectionee string `json:"dateJourneeSelectionee"`
+	Index                  int      `json:"index"`
+	Url                    string   `json:"url"`
+	LibelleCompetition     string   `json:"libelleCompetition"`
+	SousTitreCompetition   string   `json:"sousTitreCompetition"`
+	Nom                    string   `json:"nom"`
+	Phase                  string   `json:"phase"`
+	Equipes                []Equipe `json:"equipes"`
+	Recherche              string   `json:"recherche"`
+	DateJourneeSelectionee string   `json:"dateJourneeSelectionee"`
 }
 
 func main() {
@@ -105,7 +107,7 @@ func scrappingDesCompetitions(urlsCompetition []string) []Poule {
 		var recherches []string
 		for _, equipe := range miniClassement.Classement {
 			equipes = append(equipes, Equipe{equipe.EquipeLibelle, equipe.Logo})
-			recherches = append(recherches, strings.ReplaceAll(equipe.EquipeLibelle, " ", "_"))
+			recherches = append(recherches, strings.ReplaceAll(equipe.EquipeLibelle, " ", "_")+"_")
 
 		}
 
@@ -114,10 +116,9 @@ func scrappingDesCompetitions(urlsCompetition []string) []Poule {
 			miniClassement.UrlCompetitionType + "/" + miniClassement.UrlCompetition + "/poule-" + miniClassement.Poule,
 			pageHeader.Title,
 			pageHeader.SubTitle,
-
 			journeeSelector.Poule.Libelle,
 			TrouveLaPhase(pouleSelector, journeeSelector),
-			//equipes,
+			equipes,
 			strings.Join(recherches, " "),
 			TrouveLaDateDeLaJourneeSelectionee(journees, journeeSelector),
 		}

@@ -1,15 +1,15 @@
-import {recherche} from '@/app/lib/poule';
 import {SousTitreCompetition} from "@/app/ui/competitions/sous-titre-competition";
 import {AnciennesPoules} from "@/app/ui/competitions/anciennes-poules";
 
-export default async function CartesCompetitions({query}: { query: string }) {
-    const competitions = recherche(query)
+import {Resultat} from "@/app/lib/recherche";
+
+export default function CartesCompetitions({resultatRecherche}: { resultatRecherche: Resultat }) {
 
     return <section className="bg-white dark:bg-gray-900">
         <div className="container px-6 py-12 mx-auto">
             <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
 
-                {competitions.liste.map(
+                {resultatRecherche.competitions.map(
                     competition =>
                         <div key={competition.dernierePoule.url}
                              className="max-w-2xl pl-8 pr-1 py-2 bg-white rounded-xl shadow-md border dark:bg-gray-800 flex flex-col justify-between">
