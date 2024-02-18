@@ -40,7 +40,7 @@ export default function CartesCompetitions({resultatRecherche}: { resultatRecher
                                             <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
                                                   d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Zm0 0a9 9 0 0 0 5-1.5 4 4 0 0 0-4-3.5h-2a4 4 0 0 0-4 3.5 9 9 0 0 0 5 1.5Zm3-11a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
                                         </svg>
-                                        <h1 className="px-2 text-sm"> {competition.equipe.toUpperCase()}</h1>
+                                        <h3 className="px-2 text-sm"> {competition.equipe.toUpperCase()}</h3>
                                     </div>
                                     <div className="flex items-center mt-4 text-gray-700 dark:text-gray-200">
                                         <svg className="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
@@ -48,7 +48,7 @@ export default function CartesCompetitions({resultatRecherche}: { resultatRecher
                                             <path stroke="currentColor" strokeLinecap="round" strokeWidth="2"
                                                   d="M4.5 17H4a1 1 0 0 1-1-1 3 3 0 0 1 3-3h1m0-3a2.5 2.5 0 1 1 2-4.5M19.5 17h.5c.6 0 1-.4 1-1a3 3 0 0 0-3-3h-1m0-3a2.5 2.5 0 1 0-2-4.5m.5 13.5h-7a1 1 0 0 1-1-1 3 3 0 0 1 3-3h3a3 3 0 0 1 3 3c0 .6-.4 1-1 1Zm-1-9.5a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0Z"/>
                                         </svg>
-                                        <h1 className="px-2 text-sm">  {competition.dernierePoule.phase.toLowerCase()} - {competition.dernierePoule.nom.toLowerCase()}</h1>
+                                        <h3 className="px-2 text-sm">  {competition.dernierePoule.phase.toLowerCase()} - {competition.dernierePoule.nom.toLowerCase()}</h3>
                                     </div>
                                 </div>
                             </div>

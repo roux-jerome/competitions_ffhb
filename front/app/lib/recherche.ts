@@ -1,6 +1,6 @@
 import _poules from "@/app/lib/poules.json";
 import lunr from "lunr";
-import {Equipe, Poule} from "@/app/lib/poule";
+import {Equipe, Poule, Rencontre} from "@/app/lib/poule";
 
 const poules: Poule[] = _poules as Poule[]
 
@@ -35,19 +35,19 @@ export class Competition {
         let anciennesPoules = Array.from(this._poules);
         anciennesPoules.pop()
         return anciennesPoules
-            .sort((poule1, poule2) => Date.parse(poule1.dateJourneeSelectionee) - Date.parse(poule2.dateJourneeSelectionee))
+            .sort((poule1, poule2) => Date.parse(poule1.dateDebutJourneeSelectionee) - Date.parse(poule2.dateDebutJourneeSelectionee))
             .reverse();
     }
 
     public ajoute(poule: Poule) {
-        if (Date.parse(poule.dateJourneeSelectionee) > Date.parse(this.dernierePoule.dateJourneeSelectionee)) {
+        if (Date.parse(poule.dateDebutJourneeSelectionee) > Date.parse(this.dernierePoule.dateDebutJourneeSelectionee)) {
             this.dernierePoule = poule;
         }
         this._poules.push(poule)
     }
 
     public get dateDernierePoule() {
-        return Date.parse(this.dernierePoule.dateJourneeSelectionee)
+        return Date.parse(this.dernierePoule.dateDebutJourneeSelectionee)
     }
 
 
@@ -75,6 +75,26 @@ export class Competition {
 
 }
 
+class Match {
+    public rencontre: Rencontre;
+
+    constructor(public competition: Competition, private clubs: string[]) {
+        this.rencontre = competition.dernierePoule.rencontres!!.find(
+            rencontre => {
+                const trouveDansLEquipe1 = clubs.find(club => simplifieLeNomDUnClub(rencontre.equipe1Libelle) === club)
+                const trouveDansLEquipe2 = clubs.find(club => simplifieLeNomDUnClub(rencontre.equipe2Libelle) === club)
+                return trouveDansLEquipe1 || trouveDansLEquipe2
+            }
+        )!!;
+    }
+
+    public estADomicile = () => this.clubs.find(club => simplifieLeNomDUnClub(this.rencontre.equipe1Libelle) === club)
+
+}
+
+const simplifieLeNomDUnClub = (nom: string) => nom.toUpperCase().replace(/ [0-9]+$/, '').trim()
+const simplifieLeNomDUneEquipe = (equipe: Equipe) => simplifieLeNomDUnClub(equipe.libelle)
+
 export class Resultat {
 
     private _competitions = new Map<string, Competition>();
@@ -89,15 +109,14 @@ export class Resultat {
         } else {
             this._competitions.set(urlCompetitionEtEquipe, new Competition(equipeFormatee, poule))
         }
-        let nomDuClub = equipeFormatee.toUpperCase().replace(/ [0-9]+$/, '').trim()
+        let nomDuClub = simplifieLeNomDUnClub(equipeFormatee)
         if (!this._clubs.has(nomDuClub)) {
             this._clubs.set(
                 nomDuClub,
                 poule.equipes
                     ?.map(equipe => ({
-                            libelle: equipe.libelle.replace(/ [0-9]+/, '').trim(),
-                            logo:
-                            equipe.logo
+                            libelle: simplifieLeNomDUneEquipe(equipe),
+                            logo: equipe.logo
                         } as Equipe)
                     )
                     .find(equipe => {
@@ -118,6 +137,19 @@ export class Resultat {
     public get clubs() {
         return Array.from(this._clubs.values())
     }
+
+    public get rencontresDomicile() {
+        return this.competitions.map(competition =>
+            new Match(competition, Array.from(this._clubs.keys()))
+        ).filter(match => match.estADomicile())
+    }
+
+    public get rencontresExterieur() {
+        return this.competitions.map(competition =>
+            new Match(competition, Array.from(this._clubs.keys()))
+        ).filter(match => !match.estADomicile())
+    }
+
 }
 
 export function recherche(recherche: string) {

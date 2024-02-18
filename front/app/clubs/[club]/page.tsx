@@ -1,12 +1,15 @@
 import {Entete} from "@/app/ui/entete";
-import RechercheCompetitions from "@/app/ui/competitions/recherche-competitions";
+import {Suspense} from "react";
+import {ResultatClub} from "@/app/clubs/[club]/resultat-club";
 
 export default async function Club({params}: { params: { club: string } }) {
 
     return (
         <>
             <Entete/>
-            {params.club}
+            <Suspense key={params.club} fallback={<div>loading...</div>}>
+                <ResultatClub club={decodeURI(params.club)}/>
+            </Suspense>
         </>
     );
 }

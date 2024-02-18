@@ -1,3 +1,5 @@
+
+
 export interface Poule {
     index: number,
     url: string,
@@ -6,8 +8,16 @@ export interface Poule {
     nom: string
     phase: string
     recherche: string,
-    dateJourneeSelectionee: string,
+    dateDebutJourneeSelectionee: string,
+    dateFinJourneeSelectionee: string,
     equipes: Equipe[] | null | undefined
+    rencontres : Rencontre[] | null | undefined
+}
+
+export interface Rencontre {
+    "date":string,
+    "equipe1Libelle":string,
+    "equipe2Libelle":string
 }
 
 export interface Equipe {

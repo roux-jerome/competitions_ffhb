@@ -58,15 +58,26 @@ type Equipe struct {
 }
 
 type Poule struct {
-	Index                  int      `json:"index"`
-	Url                    string   `json:"url"`
-	LibelleCompetition     string   `json:"libelleCompetition"`
-	SousTitreCompetition   string   `json:"sousTitreCompetition"`
-	Nom                    string   `json:"nom"`
-	Phase                  string   `json:"phase"`
-	Equipes                []Equipe `json:"equipes"`
-	Recherche              string   `json:"recherche"`
-	DateJourneeSelectionee string   `json:"dateJourneeSelectionee"`
+	Index                       int         `json:"index"`
+	Url                         string      `json:"url"`
+	LibelleCompetition          string      `json:"libelleCompetition"`
+	SousTitreCompetition        string      `json:"sousTitreCompetition"`
+	Nom                         string      `json:"nom"`
+	Phase                       string      `json:"phase"`
+	Equipes                     []Equipe    `json:"equipes"`
+	Recherche                   string      `json:"recherche"`
+	DateDebutJourneeSelectionee string      `json:"dateDebutJourneeSelectionee"`
+	DateFinJourneeSelectionee   string      `json:"dateFinJourneeSelectionee"`
+	Rencontres                  []Rencontre `json:"rencontres"`
+}
+type Rencontre struct {
+	Date           string `json:"date"`
+	Equipe1Libelle string `json:"equipe1Libelle"`
+	Equipe2Libelle string `json:"equipe2Libelle"`
+}
+
+type RencontreList struct {
+	Recontres []Rencontre `json:"rencontres"`
 }
 
 func main() {
@@ -102,6 +113,8 @@ func scrappingDesCompetitions(urlsCompetition []string) []Poule {
 		deserialiseSousElement(e, "competitions---poule-selector", &pouleSelector)
 		var journees []Journee
 		deserialise(journeeSelector.Poule.Journees, &journees)
+		var rencontreList RencontreList
+		deserialiseSousElement(e, "competitions---rencontre-list", &rencontreList)
 
 		var equipes []Equipe
 		var recherches []string
@@ -120,7 +133,9 @@ func scrappingDesCompetitions(urlsCompetition []string) []Poule {
 			TrouveLaPhase(pouleSelector, journeeSelector),
 			equipes,
 			strings.Join(recherches, " "),
-			TrouveLaDateDeLaJourneeSelectionee(journees, journeeSelector),
+			TrouveLaDateDeDebutDeLaJourneeSelectionee(journees, journeeSelector),
+			TrouveLaDateDeFinDeLaJourneeSelectionee(journees, journeeSelector),
+			rencontreList.Recontres,
 		}
 		aggregatedCompetitions = append(aggregatedCompetitions, competition)
 
@@ -142,14 +157,22 @@ func scrappingDesCompetitions(urlsCompetition []string) []Poule {
 	return aggregatedCompetitions
 }
 
-func TrouveLaDateDeLaJourneeSelectionee(journees []Journee, selector JourneeSelector) string {
-	dateJourneeSelectionee := ""
+func TrouveLaDateDeDebutDeLaJourneeSelectionee(journees []Journee, selector JourneeSelector) string {
 	for _, journee := range journees {
 		if strconv.Itoa(journee.Numero) == selector.SelectedNumeroJournee {
 			return journee.DateDebut
 		}
 	}
-	return dateJourneeSelectionee
+	return ""
+}
+
+func TrouveLaDateDeFinDeLaJourneeSelectionee(journees []Journee, selector JourneeSelector) string {
+	for _, journee := range journees {
+		if strconv.Itoa(journee.Numero) == selector.SelectedNumeroJournee {
+			return journee.DateFin
+		}
+	}
+	return ""
 }
 
 func TrouveLaPhase(pouleSelector PouleSelector, selector JourneeSelector) string {
