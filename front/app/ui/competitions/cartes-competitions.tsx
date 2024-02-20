@@ -1,10 +1,10 @@
 import {SousTitreCompetition} from "@/app/ui/competitions/sous-titre-competition";
 import {AnciennesPoules} from "@/app/ui/competitions/anciennes-poules";
 
-import {rechercheCompetitions, ResultatsCompetitions} from "@/app/lib/competitions";
+import {rechercheCompetitions} from "@/app/lib/competitions";
 
-export default async function CartesCompetitions({recherche}: { recherche: string }, resultatsCompetitions: ResultatsCompetitions = rechercheCompetitions(recherche)) {
-    const resultatRecherche = resultatsCompetitions
+export default async function CartesCompetitions({recherche}: { recherche: string }) {
+    const resultatRecherche = rechercheCompetitions(recherche)
 
     return <section className="bg-white dark:bg-gray-900">
         <div className="container px-6 py-12 mx-auto">

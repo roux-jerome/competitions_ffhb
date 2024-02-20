@@ -4,6 +4,19 @@ import {rechercheClubs} from "@/app/lib/clubs";
 
 export default async function ListeClub({recherche, afficheSousFormeDeLien = true}: { recherche: string, afficheSousFormeDeLien?: boolean }) {
     const resultatRecherche = rechercheClubs(recherche)
+
+    function formatUrlLogo(logo: string) {
+        if (logo && logo != "") {
+            return "https://media-logos-clubs.ffhandball.fr/64/"
+                + logo.toLowerCase()
+                    .replace(".jpg", ".webp")
+                    .replace(".jpeg", ".webp")
+                    .replace(".png", ".webp")
+        }
+        return "https://www.ffhandball.fr/app/themes/ffhandball/img/logo_generic_club.png"
+    }
+
+
     return <section className="bg-white dark:bg-gray-900">
         <div className="container px-6  mx-auto">
             <div className={clsx("grid",
@@ -17,13 +30,13 @@ export default async function ListeClub({recherche, afficheSousFormeDeLien = tru
                             {afficheSousFormeDeLien
                                 ? <Link className="mt-2 flex flex-col items-center text-center font-semibold text-blue-500" href=
                                     {`/matchs/${encodeURIComponent(club.libelle)}`}>
-                                    <img src={"https://media-logos-clubs.ffhandball.fr/64/" + club.logo.replace(".jpg", ".webp")} alt={"logo " + club.libelle}/>
+                                    <img src={formatUrlLogo(club.logo)} alt={"logo " + club.libelle}/>
                                     {club.libelle}
                                 </Link>
 
                                 : <span className="mt-2 flex flex-col items-center text-center font-semibold">
                                 {club.libelle}
-                                    <img src={"https://media-logos-clubs.ffhandball.fr/64/" + club.logo.replace(".jpg", ".webp")} alt={"logo " + club.libelle}/>
+                                    <img src={formatUrlLogo(club.logo)} alt={"logo " + club.libelle}/>
                             </span>
                             }
 
