@@ -1,31 +1,13 @@
-import {Resultat} from "@/app/lib/recherche";
-import clsx from "clsx/lite";
+import {rechercheMatchsDuWeekend} from "@/app/lib/matchs-weekend";
+import {ListeMatchs} from "@/app/ui/matchs/liste-matchs";
 
-export function EnteteClub({resultatRecherche}: { resultatRecherche: Resultat }) {
-    return <section className="bg-white dark:bg-gray-900">
-
-        <div className="container px-6 py-12 mx-auto flex flex-col items-center">
-            <small className="text-white ml-4 px-2 py-1 rounded-full bg-blue-500">BETA</small>
-            <div className={clsx("grid",
-                resultatRecherche.clubs.length > 1
-                    ? "grid-cols-2 gap-8 md:grid-cols-4 lg:grid-cols-6"
-                    : "grid-cols-1 gap-8 "
-            )}>
-
-                {resultatRecherche.clubs.map(
-                    club =>
-                        <div key={club?.libelle}
-                             className="pl-2 pr-1 py-2 bg-white flex flex-col justify-between">
-                            <span className="mt-2 flex flex-col items-center text-center font-semibold">
-                                {club?.libelle}
-                                <img src={"https://media-logos-clubs.ffhandball.fr/64/" + club?.logo.replace(".jpg", ".webp")} alt={"logo " + club?.libelle}/>
-                            </span>
-                        </div>
-                )}
-            </div>
-            <h1 className="font-bold text-2xl">Matchs du weekend</h1>
-            <small className="text-gray-500">
-                {resultatRecherche.competitions[0].dernierePoule.dateDebutJourneeSelectionee} au {resultatRecherche.competitions[0].dernierePoule.dateFinJourneeSelectionee}</small>
+export async function MatchsDuWeekEnd({club}: { club: string }) {
+    const resultatRecherche = rechercheMatchsDuWeekend(club)
+    return <>
+        <small className="text-gray-500">
+            {resultatRecherche.date}
+        </small>
+        <div className="container grid md:grid-cols-2 md:gap-20">
             <div className="container flex flex-col justify-start">
                 <div className="flex items-center mt-6">
                     <svg className="w-6 h-6 text-gray-800" xmlns="http://www.w3.org/2000/svg" id="Outline" viewBox="0 0 24 24">
@@ -42,12 +24,9 @@ export function EnteteClub({resultatRecherche}: { resultatRecherche: Resultat })
                     <span className="inline-block w-3 h-1 ml-1 bg-blue-500 rounded-full"></span>
                     <span className="inline-block w-1 h-1 ml-1 bg-blue-500 rounded-full"></span>
                 </div>
-                {resultatRecherche.rencontresDomicile.map(rencontre =>
-                    <div key={rencontre.rencontre.equipe2Libelle}>
-                        {rencontre.competition.libelleCompetition} - {rencontre.rencontre.equipe2Libelle} - {rencontre.rencontre.date}
-                    </div>
-                )}
-
+                <ListeMatchs matchs={resultatRecherche.matchs.domicile}/>
+            </div>
+            <div className="container flex flex-col justify-start">
                 <div className="flex items-center mt-6">
                     <svg className="w-6 h-6 text-gray-800" xmlns="http://www.w3.org/2000/svg" id="Outline" viewBox="0 0 24 24">
                         <path
@@ -63,12 +42,8 @@ export function EnteteClub({resultatRecherche}: { resultatRecherche: Resultat })
                     <span className="inline-block w-3 h-1 ml-1 bg-blue-500 rounded-full"></span>
                     <span className="inline-block w-1 h-1 ml-1 bg-blue-500 rounded-full"></span>
                 </div>
-                {resultatRecherche.rencontresExterieur.map(rencontre =>
-                    <div key={rencontre.rencontre.equipe1Libelle}>
-                        {rencontre.competition.libelleCompetition} - {rencontre.rencontre.equipe1Libelle} - {rencontre.rencontre.date}
-                    </div>
-                )}
+                <ListeMatchs matchs={resultatRecherche.matchs.exterieur}/>
             </div>
         </div>
-    </section>;
+    </>;
 }

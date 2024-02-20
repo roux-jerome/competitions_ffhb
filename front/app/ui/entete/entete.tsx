@@ -1,6 +1,6 @@
 import Image from "next/image";
 import iconimageHand from "./icon-handball.png";
-import LiensFfhb from "@/app/ui/liens-ffhb";
+import LiensFfhb from "./liens-ffhb";
 import Link from "next/link";
 
 export function Entete() {
