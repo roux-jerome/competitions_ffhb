@@ -46,18 +46,26 @@ export class Match {
 }
 
 class Journee {
-    public domicile: Match[] = []
-    public exterieur: Match[ ] = []
+    private _domicile: Match[] = []
+    private _exterieur: Match[ ] = []
 
     constructor(public readonly debut: DateTime, public readonly fin: DateTime) {
     }
 
     public ajouteMatch(match: Match) {
         if (match.estADomicile) {
-            this.domicile.push(match)
+            this._domicile.push(match)
         } else {
-            this.exterieur.push(match)
+            this._exterieur.push(match)
         }
+    }
+
+    public get domicile(){
+        return this._domicile.toSorted((a, b) => a.dateRencontre.toMillis() - b.dateRencontre.toMillis())
+    }
+
+    public get exterieur(){
+        return this._exterieur.toSorted((a, b) => a.dateRencontre.toMillis() - b.dateRencontre.toMillis())
     }
 
 }
