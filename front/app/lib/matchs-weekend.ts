@@ -4,7 +4,7 @@ import {DateTime} from "luxon";
 
 export class Match {
 
-    constructor(public libelle: string, public nomEquipe: string, public rencontre: Rencontre) {
+    constructor(public libelle: string, public url: string, public nomEquipe: string, public rencontre: Rencontre) {
 
     }
 
@@ -17,7 +17,7 @@ export class Match {
             return "-15 "
         } else if (this.libelle.toLowerCase().indexOf("u18") >= 0) {
             return "-18 "
-        } else{
+        } else {
             return "S"
         }
     }
@@ -60,11 +60,11 @@ class Journee {
         }
     }
 
-    public get domicile(){
+    public get domicile() {
         return this._domicile.toSorted((a, b) => a.dateRencontre.toMillis() - b.dateRencontre.toMillis())
     }
 
-    public get exterieur(){
+    public get exterieur() {
         return this._exterieur.toSorted((a, b) => a.dateRencontre.toMillis() - b.dateRencontre.toMillis())
     }
 
@@ -112,7 +112,7 @@ export class MatchsDuWeekend implements Resultats {
             }
             this._journees.get(poule.dateDebutJourneeSelectionee)!.ajouteMatch(
                 new Match(
-                    poule.libelleCompetition,
+                    poule.libelleCompetition, poule.url,
                     nomEquipe,
                     rencontre
                 ))
