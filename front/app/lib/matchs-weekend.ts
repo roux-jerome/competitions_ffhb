@@ -61,11 +61,11 @@ class Journee {
     }
 
     public get domicile() {
-        return this._domicile.toSorted((a, b) => a.dateRencontre.toMillis() - b.dateRencontre.toMillis())
+        return this._domicile.sort((a, b) => a.dateRencontre.toMillis() - b.dateRencontre.toMillis())
     }
 
     public get exterieur() {
-        return this._exterieur.toSorted((a, b) => a.dateRencontre.toMillis() - b.dateRencontre.toMillis())
+        return this._exterieur.sort((a, b) => a.dateRencontre.toMillis() - b.dateRencontre.toMillis())
     }
 
 }
