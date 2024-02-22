@@ -1,6 +1,5 @@
 import Image from "next/image";
 import iconimageHand from "./icon-handball.png";
-import LiensFfhb from "./liens-ffhb";
 import Link from "next/link";
 
 export function Entete() {
@@ -12,7 +11,6 @@ export function Entete() {
                            height={64} alt=""/>
                 </Link>
 
-                <LiensFfhb></LiensFfhb>
 
             </div>
         </nav>
