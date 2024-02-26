@@ -145,9 +145,9 @@ func scrappingDesCompetitions(urlsCompetition []string) []Poule {
 		fmt.Println("Problème de récupération de la poule", r.Request.URL, " statut:", r.StatusCode)
 	})
 
-	collecteurCompetitions.OnRequest(func(r *colly.Request) {
-		fmt.Println("Récupération de la poule", r.URL.String())
-	})
+	//collecteurCompetitions.OnRequest(func(r *colly.Request) {
+	//	fmt.Println("Récupération de la poule", r.URL.String())
+	//})
 
 	for _, urlCompetition := range urlsCompetition {
 		collecteurCompetitions.Visit(urlCompetition)
@@ -214,9 +214,9 @@ func recupereLesUrlDesCompetitionsDeLaSaison2024() []string {
 		fmt.Println("Problème de récupération du sitemap", r.Request.URL, "statut: ", r.StatusCode)
 	})
 
-	collecteurURLCompetitions.OnRequest(func(r *colly.Request) {
-		fmt.Println("Parcours du sitemap", r.URL.String())
-	})
+	//collecteurURLCompetitions.OnRequest(func(r *colly.Request) {
+	//	fmt.Println("Parcours du sitemap", r.URL.String())
+	//})
 
 	err := collecteurURLCompetitions.Visit("https://www.ffhandball.fr/sitemap_index.xml")
 	check(err)
