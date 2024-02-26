@@ -1,6 +1,7 @@
 on:
   schedule:
     - cron:  '0 0 * * 1,3,5'
+  workflow_dispatch:
 jobs:
   scrap:
     runs-on: ubuntu-latest
