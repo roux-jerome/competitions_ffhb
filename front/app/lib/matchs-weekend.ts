@@ -9,7 +9,7 @@ export class Match {
     }
 
     public get categorie() {
-        if (this.libelle.toLowerCase().indexOf("u11") >= 0) {
+        if (this.libelle.toLowerCase().indexOf("u11") >= 0 || this.libelle.toLowerCase().startsWith("-11 ")) {
             return "-11 "
         } else if (this.libelle.toLowerCase().indexOf("u13") >= 0) {
             return "-13 "
@@ -17,20 +17,22 @@ export class Match {
             return "-15 "
         } else if (this.libelle.toLowerCase().indexOf("u18") >= 0) {
             return "-18 "
+        } else if (this.libelle.toLowerCase().indexOf("plateau") >= 0) {
+            return "mini "
         } else {
             return "S"
         }
     }
 
     public get type() {
-        if (this.libelle.toLowerCase().indexOf("masculin") >= 0) {
+        if (this.libelle.toLowerCase().indexOf("masculin") >= 0 || this.libelle.toLowerCase().indexOf(" m ") >= 0 || this.libelle.toLowerCase().endsWith(" m")) {
             return "G"
-        } else if (this.libelle.toLowerCase().indexOf("feminine") >= 0) {
+        } else if (this.libelle.toLowerCase().indexOf("feminin") >= 0 || this.libelle.toLowerCase().indexOf(" f ") >= 0 || this.libelle.toLowerCase().endsWith(" f")) {
             return "F"
         } else if (this.libelle.toLowerCase().indexOf("mixte") >= 0) {
             return "Mixte"
         } else {
-            return "?"
+            return ""
         }
     }
 
