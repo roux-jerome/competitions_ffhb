@@ -60,6 +60,7 @@ export default async function Home({
                             </Suspense>
                         </div>
                         <h2 className="font-semibold">Compétitions</h2>
+                        <small className="text-xs text-gray-500 py-5 font-light"> Choisis une compétition pour accéder au détail sur le site de la ffhandball.</small>
                         <Suspense key={recherche + "competitions"} fallback={<div>loading...</div>}>
                             <CartesCompetitions recherche={recherche}/>
                         </Suspense>
