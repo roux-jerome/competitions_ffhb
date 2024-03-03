@@ -17,7 +17,7 @@ export class Match {
             return "-15 "
         } else if (this.libelle.toLowerCase().indexOf("u18") >= 0) {
             return "-18 "
-        } else if (this.libelle.toLowerCase().indexOf("plateau") >= 0) {
+        } else if (this.libelle.toLowerCase().indexOf("plateau") >= 0 || this.libelle.toLowerCase().indexOf("minihand") >= 0) {
             return "mini "
         } else {
             return "S"
