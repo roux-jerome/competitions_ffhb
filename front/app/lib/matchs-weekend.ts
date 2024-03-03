@@ -81,17 +81,17 @@ export class MatchsDuWeekend implements Resultats {
 
 
     public get date(): string {
-        let leJourneeLaPlusProche = this.laJourneeLaPlusProcheDeMaintenant;
+        let leJourneeLaPlusProche = this.laJourneeLaPlusProcheDeMaintenantDansLeFuture;
         return `du ${(leJourneeLaPlusProche.debut.toFormat(FORMAT_COURT, LOCAL_FR))} au ${(leJourneeLaPlusProche.fin.toFormat(FORMAT_COURT, LOCAL_FR))}`
     }
 
-    private get laJourneeLaPlusProcheDeMaintenant() {
+    private get laJourneeLaPlusProcheDeMaintenantDansLeFuture() {
 
         let journees = Array.from(this._journees.values())
 
         let journeeLaPlusProcheDeMaintenant = journees[0]
         journees.forEach(journee => {
-            if (journeeLaPlusProcheDeMaintenant.debut.diffNow().toMillis() < journee.debut.diffNow().toMillis()) {
+            if (journee.debut.diffNow().toMillis() > 0 && journeeLaPlusProcheDeMaintenant.debut.diffNow().toMillis() > journee.debut.diffNow().toMillis()) {
                 journeeLaPlusProcheDeMaintenant = journee
             }
         })
@@ -124,7 +124,7 @@ export class MatchsDuWeekend implements Resultats {
 
 
     public get matchs() {
-        return this.laJourneeLaPlusProcheDeMaintenant
+        return this.laJourneeLaPlusProcheDeMaintenantDansLeFuture
     }
 
 }
