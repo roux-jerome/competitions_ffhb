@@ -15,7 +15,6 @@ export default async function Matchs({params}: { params: { club: string } }) {
         <section className="bg-white dark:bg-gray-900">
 
             <div className="container px-6 py-12 mx-auto flex flex-col items-center">
-                <small className="text-white ml-4 px-2 py-1 rounded-full bg-blue-500">EN CONSTRUCTION</small>
                 <Suspense key={club + "clubs"} fallback={<div>loading...</div>}>
                     <ListeClub recherche={club} afficheSousFormeDeLien={false}/>
                 </Suspense>

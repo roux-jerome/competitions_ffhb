@@ -51,8 +51,6 @@ export default async function Home({
                     <div className="container px-6 py-1 mx-auto">
                         <h2 className="font-semibold">
                             Clubs
-                            <small className="text-white ml-4 px-2 py-1 rounded-full bg-blue-500">EN CONSTRUCTION</small>
-
                         </h2>
                         <small className="text-xs text-gray-500 py-5 font-light"> Choisis ton club pour accéder aux matchs du week-end.</small>
 
