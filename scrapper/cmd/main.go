@@ -8,6 +8,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 )
 
 func check(e error) {
@@ -149,9 +150,12 @@ func scrappingDesCompetitions(urlsCompetition []string) []Poule {
 	//	fmt.Println("Récupération de la poule", r.URL.String())
 	//})
 
-	for _, urlCompetition := range urlsCompetition {
+	fmt.Println("Début du scrapping des poules")
+	for compteur, urlCompetition := range urlsCompetition {
 		collecteurCompetitions.Visit(urlCompetition)
-
+		if compteur%50 == 0 {
+			fmt.Println(compteur, " sur ", len(urlsCompetition))
+		}
 	}
 	fmt.Println("Fin du scrapping des poules")
 	return aggregatedCompetitions
@@ -200,23 +204,29 @@ func recupereLesUrlDesCompetitionsDeLaSaison2024() []string {
 	collecteurURLCompetitions := colly.NewCollector(colly.MaxDepth(3), colly.CacheDir("../cache-sitemap"))
 	collecteurURLCompetitions.OnXML("//sitemapindex/sitemap/loc", func(e *colly.XMLElement) {
 		if strings.Contains(e.Text, "competitions_poules") {
-			e.Request.Visit(e.Text)
+			numero, _ := strconv.Atoi(strings.ReplaceAll(strings.ReplaceAll(e.Text, "https://www.ffhandball.fr/competitions_poules-sitemap", ""), ".xml", ""))
+			if numero >= 80 {
+				e.Request.Visit(e.Text)
+			}
 		}
 
 	})
 
-	collecteurURLCompetitions.OnXML("//urlset/url/loc", func(e *colly.XMLElement) {
-		if strings.Contains(e.Text, "saison-2023-2024") {
-			urlCompetitions = append(urlCompetitions, e.Text)
+	collecteurURLCompetitions.OnXML("//urlset/url", func(e *colly.XMLElement) {
+		if strings.Contains(e.ChildText("loc"), "saison-2023-2024") {
+			dateModification, _ := time.Parse(time.RFC3339, e.ChildText("lastmod"))
+			if dateModification.After(time.Now().AddDate(0, 0, -15)) {
+				urlCompetitions = append(urlCompetitions, e.ChildText("loc"))
+			}
 		}
 	})
 	collecteurURLCompetitions.OnError(func(r *colly.Response, err error) {
 		fmt.Println("Problème de récupération du sitemap", r.Request.URL, "statut: ", r.StatusCode)
 	})
 
-	//collecteurURLCompetitions.OnRequest(func(r *colly.Request) {
-	//	fmt.Println("Parcours du sitemap", r.URL.String())
-	//})
+	collecteurURLCompetitions.OnRequest(func(r *colly.Request) {
+		fmt.Println("Parcours du sitemap", r.URL.String())
+	})
 
 	err := collecteurURLCompetitions.Visit("https://www.ffhandball.fr/sitemap_index.xml")
 	check(err)
