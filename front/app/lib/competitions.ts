@@ -48,7 +48,7 @@ export class Competition {
         formatageTexte.pop()
         this.tags.push(details[0].replaceAll("-", " "));
 
-        ["masculin", "masculins", "feminine", "feminines", "u18", "u15", "u13", "u11"].forEach((tagAChercher: string) => {
+        ["masculin", "masculine", "masculins", "feminine", "feminines", "u18", "u15", "u13", "u11"].forEach((tagAChercher: string) => {
             if (formatageTexte.includes(tagAChercher)) {
                 this.tags.push(tagAChercher)
             }
