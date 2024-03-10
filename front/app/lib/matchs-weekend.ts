@@ -51,7 +51,7 @@ class Journee {
     private _domicile: Match[] = []
     private _exterieur: Match[ ] = []
 
-    constructor(public readonly debut: DateTime, public readonly fin: DateTime) {
+    constructor(public debut: DateTime, public fin: DateTime) {
     }
 
     public ajouteMatch(match: Match) {
@@ -77,7 +77,7 @@ const FORMAT_COURT = 'd LLLL yyyy';
 
 export class MatchsDuWeekend implements Resultats {
 
-    private _journees = new Map<string, Journee>();
+    private _journees: Journee[] = [];
 
 
     public get date(): string {
@@ -87,11 +87,10 @@ export class MatchsDuWeekend implements Resultats {
 
     private get laJourneeLaPlusProcheDeMaintenantDansLeFuture() {
 
-        let journees = Array.from(this._journees.values())
 
-        let journeeLaPlusProcheDeMaintenant = journees[0]
-        journees.forEach(journee => {
-            if (journee.debut.diffNow().toMillis() > 0 && journeeLaPlusProcheDeMaintenant.debut.diffNow().toMillis() > journee.debut.diffNow().toMillis()) {
+        let journeeLaPlusProcheDeMaintenant = this._journees[0]
+        this._journees.forEach(journee => {
+            if (Math.abs(journeeLaPlusProcheDeMaintenant.debut.diffNow().toMillis()) > Math.abs(journee.debut.diffNow().toMillis())) {
                 journeeLaPlusProcheDeMaintenant = journee
             }
         })
@@ -104,20 +103,33 @@ export class MatchsDuWeekend implements Resultats {
             rencontre => rencontre.equipe1Libelle.toLowerCase() === nomEquipe || rencontre.equipe2Libelle.toLowerCase() === nomEquipe
         );
         if (rencontre) {
-            if (!this._journees.has(poule.dateDebutJourneeSelectionee)) {
-                this._journees.set(poule.dateDebutJourneeSelectionee,
-                    new Journee(
-                        DateTime.fromISO(poule.dateDebutJourneeSelectionee),
-                        DateTime.fromISO(poule.dateFinJourneeSelectionee)
-                    )
+            let dateDebutJournee = DateTime.fromISO(poule.dateDebutJourneeSelectionee);
+            let dateFinJournee = DateTime.fromISO(poule.dateFinJourneeSelectionee);
+
+            let journeeAModifier = this._journees.find(
+                journee =>
+                    journee.debut.equals(dateDebutJournee)
+                    || journee.debut.equals(dateDebutJournee.minus({days: 1}))
+                    || journee.debut.equals(dateDebutJournee.plus({days: 1})))
+
+            if (!journeeAModifier) {
+                journeeAModifier = new Journee(
+                    DateTime.fromISO(poule.dateDebutJourneeSelectionee),
+                    DateTime.fromISO(poule.dateFinJourneeSelectionee)
                 )
+                this._journees.push(journeeAModifier)
             }
-            this._journees.get(poule.dateDebutJourneeSelectionee)!.ajouteMatch(
-                new Match(
-                    poule.libelleCompetition, poule.url,
-                    nomEquipe,
-                    rencontre
-                ))
+            journeeAModifier.ajouteMatch(new Match(
+                poule.libelleCompetition, poule.url,
+                nomEquipe,
+                rencontre
+            ))
+            if(dateDebutJournee < journeeAModifier.debut ){
+                journeeAModifier.debut = dateDebutJournee
+            }
+            if(dateFinJournee > journeeAModifier.fin ){
+                journeeAModifier.fin = dateFinJournee
+            }
         }
 
     }
