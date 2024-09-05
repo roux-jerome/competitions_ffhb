@@ -25,7 +25,7 @@ export class Match {
     }
 
     public get type() {
-        if (this.libelle.toLowerCase().indexOf("masculin") >= 0 || this.libelle.toLowerCase().indexOf("masc") >= 0 || this.libelle.toLowerCase().indexOf(" m ") >= 0 || this.libelle.toLowerCase().endsWith(" m")) {
+        if (this.libelle.toLowerCase().indexOf("garcons") >= 0 || this.libelle.toLowerCase().indexOf("masculin") >= 0 || this.libelle.toLowerCase().indexOf("masc") >= 0 || this.libelle.toLowerCase().indexOf(" m ") >= 0 || this.libelle.toLowerCase().endsWith(" m")) {
             return "G"
         } else if (this.libelle.toLowerCase().indexOf("feminin") >= 0 || this.libelle.toLowerCase().indexOf(" f ") >= 0 || this.libelle.toLowerCase().endsWith(" f")) {
             return "F"

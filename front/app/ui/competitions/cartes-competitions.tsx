@@ -25,7 +25,7 @@ export default async function CartesCompetitions({recherche}: { recherche: strin
                                     }
                                 </div>
                                 <div className="mt-2">
-                                    <a href={"https://www.ffhandball.fr/competitions/saison-2023-2024-19/" + competition.dernierePoule.url}
+                                    <a href={"https://www.ffhandball.fr/competitions/saison-saison-2024-2025-20/" + competition.dernierePoule.url}
                                        className="flex items-center text-l font-bold text-blue-500 dark:text-white dark:hover:text-gray-200 hover:underline"
                                        tabIndex={0}
                                        role="link" target="_blank">

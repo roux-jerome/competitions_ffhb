@@ -83,7 +83,7 @@ type RencontreList struct {
 
 func main() {
 
-	urlsCompetition := recupereLesUrlDesCompetitionsDeLaSaison2024()
+	urlsCompetition := recupereLesUrlDesCompetitionsDeLaSaison2025()
 
 	aggregatedCompetitions := scrappingDesCompetitions(urlsCompetition)
 
@@ -199,13 +199,13 @@ func deserialise(texte string, resultat any) {
 	check(err)
 }
 
-func recupereLesUrlDesCompetitionsDeLaSaison2024() []string {
+func recupereLesUrlDesCompetitionsDeLaSaison2025() []string {
 	var urlCompetitions []string
 	collecteurURLCompetitions := colly.NewCollector(colly.MaxDepth(3), colly.CacheDir("../cache-sitemap"))
 	collecteurURLCompetitions.OnXML("//sitemapindex/sitemap/loc", func(e *colly.XMLElement) {
 		if strings.Contains(e.Text, "competitions_poules") {
 			numero, _ := strconv.Atoi(strings.ReplaceAll(strings.ReplaceAll(e.Text, "https://www.ffhandball.fr/competitions_poules-sitemap", ""), ".xml", ""))
-			if numero >= 80 {
+			if numero >= 92 {
 				e.Request.Visit(e.Text)
 			}
 		}
@@ -213,7 +213,7 @@ func recupereLesUrlDesCompetitionsDeLaSaison2024() []string {
 	})
 
 	collecteurURLCompetitions.OnXML("//urlset/url", func(e *colly.XMLElement) {
-		if strings.Contains(e.ChildText("loc"), "saison-2023-2024") {
+		if strings.Contains(e.ChildText("loc"), "saison-2024-2025") {
 			dateModification, _ := time.Parse(time.RFC3339, e.ChildText("lastmod"))
 			if dateModification.After(time.Now().AddDate(0, 0, -15)) {
 				urlCompetitions = append(urlCompetitions, e.ChildText("loc"))
