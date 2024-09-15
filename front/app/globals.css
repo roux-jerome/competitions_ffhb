@@ -8,6 +8,22 @@ input:not(:placeholder-shown) ~ label {
 }
 
 input:focus ~ label {
-  @apply text-blue-400;
+  @apply text-orange-600;
   @apply left-0;
+}
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active{
+  -webkit-box-shadow: 0 0 0 30px white inset !important;
+}
+input::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  margin-left: 10px;
+  background:
+          linear-gradient(45deg, rgba(0,0,0,0) 0%,rgba(0,0,0,0) 43%,#ea580c 45%,#ea580c 55%,rgba(0,0,0,0) 57%,rgba(0,0,0,0) 100%),
+          linear-gradient(135deg, transparent 0%,transparent 43%,#ea580c 45%,#ea580c 55%,transparent 57%,transparent 100%);
 }
