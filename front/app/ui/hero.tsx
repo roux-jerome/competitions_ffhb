@@ -93,13 +93,18 @@ export function Hero() {
             </div>
 
 
-                {!isRechercheEnCours && <div
-                    className="flex items-center justify-center w-full lg:w-1/2"
-                >
+            {!isRechercheEnCours &&
+                <div className="flex items-center justify-center w-full lg:w-1/2">
                     <Image className="object-cover" src={imageHand} alt="email illustration vector art"/>
                 </div>
-                }
+            }
+
         </div>
+        {((searchParams.get('recherche') == null || searchParams.get('recherche') == "") && isRechercheEnCours) &&
+            <div className="flex items-center justify-center ">
+                <Image className="w-full md:w-1/2 opacity-5" src={imageHand} alt="email illustration vector art"/>
+            </div>
+        }
     </div>
 
 
