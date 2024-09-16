@@ -1,7 +1,4 @@
 import {Entete} from "@/app/ui/entete/entete";
-import {Recherche} from "@/app/ui/recherche";
-import Image from "next/image";
-import imageHand from "@/app/ui/hand.png";
 import {Suspense} from "react";
 import ListeClub from "@/app/ui/clubs/liste-club";
 import CartesCompetitions from "@/app/ui/competitions/cartes-competitions";
@@ -19,27 +16,7 @@ export default async function Home({
     return (
         <>
             <Entete/>
-            <div className="container px-6 py-1 mx-auto">
-                <div className="items-center lg:flex">
-                    <div className="w-full lg:w-1/2">
-
-                        <Hero/>
-
-                        <div className="flex flex-col mt-6 space-y-3 lg:space-y-0 lg:flex-row">
-                            <div className="relative w-full z-0">
-                                <Recherche/>
-                            </div>
-                        </div>
-                    </div>
-
-
-                    <div className="flex items-center justify-center w-full lg:w-1/2">
-                        <div className={(recherche != '' ? "hidden md:block" : "block")}>
-                            <Image className="object-cover" src={imageHand} alt="email illustration vector art"/>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <Hero/>
             {recherche != '' &&
                 <section className="bg-white dark:bg-gray-900">
 
