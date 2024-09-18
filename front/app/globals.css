@@ -24,6 +24,45 @@ input::-webkit-search-cancel-button {
   height: 12px;
   margin-left: 10px;
   background:
-          linear-gradient(45deg, rgba(0,0,0,0) 0%,rgba(0,0,0,0) 43%,#ea580c 45%,#ea580c 55%,rgba(0,0,0,0) 57%,rgba(0,0,0,0) 100%),
-          linear-gradient(135deg, transparent 0%,transparent 43%,#ea580c 45%,#ea580c 55%,transparent 57%,transparent 100%);
+          linear-gradient(45deg, rgba(0,0,0,0) 0%,rgba(0,0,0,0) 43%,#fe6019 45%,#fe6019 55%,rgba(0,0,0,0) 57%,rgba(0,0,0,0) 100%),
+          linear-gradient(135deg, transparent 0%,transparent 43%,#fe6019 45%,#fe6019 55%,transparent 57%,transparent 100%);
 }
+
+.bg-theme {
+  position: relative;
+  /*z-index: -1;*/
+  height: 100%;
+  border-radius: 1rem;
+  background-size: contain;
+  background-position: 50%;
+}
+
+.bg-theme:before {
+  left: 0;
+  top: 0;
+  --tw-scale-x: .3;
+  --tw-scale-y: .3;
+  border-radius: 30px;
+  --tw-bg-opacity: 1;
+  background-color: rgb(255 247 243/var(--tw-bg-opacity));
+  transition-property: transform;
+  transition-duration: 1.5s;
+}
+
+.bg-theme:after,.bg-theme:before {
+  position: absolute;
+  z-index: -1;
+  height: 100%;
+  width: 100%;
+  background-size: contain;
+  background-repeat: no-repeat;
+  --tw-content: "";
+  content: var(--tw-content)
+}
+
+.bg-theme:after {
+  background-position: 0;
+  background-image: url("data:image/svg+xml,%0A%3Csvg width='1401' height='613' viewBox='0 0 1401 613' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M2 580C35.1785 462.015 166.359 247.408 425.652 332.866C749.767 439.688 890.318 302.84 946.338 181.583C1002.36 60.3256 1149.41 -52.8479 1400 35.4968' stroke='%23FFE4D1' stroke-width='4' stroke-dasharray='10 10'/%3E%3Cpath d='M1398 0.999977C1364.87 125.95 1233.88 353.224 974.955 262.722C651.302 149.594 510.953 294.52 455.013 422.935C399.073 551.35 252.231 671.203 2.00002 577.644' stroke='%23FFE4D1' stroke-width='4' stroke-dasharray='10 10'/%3E%3C/svg%3E%0A")
+}
+
+
