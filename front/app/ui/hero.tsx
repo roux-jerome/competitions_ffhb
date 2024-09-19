@@ -6,6 +6,7 @@ import imageHand from "@/app/ui/hand.png";
 import {usePathname, useRouter, useSearchParams} from "next/navigation";
 import {ChangeEvent, KeyboardEvent, useRef, useState} from "react";
 import {useDebouncedCallback} from "use-debounce";
+import {clsx} from "clsx";
 
 export function Hero() {
     const searchParams = useSearchParams();
@@ -84,10 +85,13 @@ export function Hero() {
                                onBlur={sortDeLaRecherce}
                                onChange={changeLaValeurDeLaRecherche}
                                onKeyDown={gereLAppuieSurLaToucheEntree}
-                               className="block p-3 text-lg w-full bg-transparent text-gray-700 border rounded-full focus:border-orange-600 focus:outline-none focus:ring focus:ring-opacity-0 focus:ring-orange-300"
+                               className={clsx(
+                                   'block p-3 text-xl w-full bg-orange-50 text-gray-700 border rounded-xl border-gray-400',
+                                    isRechercheEnCours?"mt-10 border-orange-600 focus:border-orange-600 focus:outline-none focus:ring focus:ring-opacity-0 focus:ring-orange-300":"")}
+
                                placeholder=" "/>
                         <label htmlFor="club"
-                               className="absolute top-0 p-4 origin-0 duration-300 -z-1 bg-white text-gray-500">Saisis ton club</label>
+                               className="absolute top-0 p-4 origin-0 duration-300 bg-transparent text-gray-500">Recherche ton club</label>
                     </div>
                 </motion.div>
             </div>
