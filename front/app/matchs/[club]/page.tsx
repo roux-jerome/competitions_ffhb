@@ -9,20 +9,29 @@ export default async function Matchs({params}: { params: { club: string } }) {
 
     return <>
         <Entete/>
-        <Link href={"/?recherche=" + params.club} className="text-sm text-blue-500 pl-3">
-            &lt;- Recherche
-        </Link>
-        <section className="bg-white dark:bg-gray-900">
 
-            <div className="container px-6 py-12 mx-auto flex flex-col items-center">
+        <section>
+
+            <div className="container pt-10 mx-auto flex flex-col items-start">
+                <Link href={"/?recherche=" + params.club} className="text-gray-500 text-sm py-2 px-4 inline-flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                         stroke-linejoin="round" className="lucide lucide-chevron-left">
+                        <path d="m15 18-6-6 6-6"/>
+                    </svg>
+                    <span className="">Recherche</span>
+                </Link>
+
+            </div>
+            <div className="container px-6 py-2 mx-auto flex flex-col items-center">
+
                 <Suspense key={club + "clubs"} fallback={<div>loading...</div>}>
                     <ListeClub recherche={club} afficheSousFormeDeLien={false}/>
                 </Suspense>
-                <h1 className="font-bold text-2xl">Matchs du week-end</h1>
-                <Suspense key={club + "match"} fallback={<div>loading...</div>}>
-                    <MatchsDuWeekEnd club={club}/>
-                </Suspense>
-            </div>
+                    <h1 className="font-bold text-2xl">Matchs du week-end</h1>
+                    <Suspense key={club + "match"} fallback={<div>loading...</div>}>
+                        <MatchsDuWeekEnd club={club}/>
+                    </Suspense>
+                </div>
         </section>
     </>
 
