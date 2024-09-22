@@ -15,33 +15,34 @@ export function Hero() {
     const lanceLaRecherce = () => {
         setIsRechercheEnCours(true);
     };
-    const sortDeLaRecherce = () => {
+    const sortDeLaRecherce = useDebouncedCallback(() => {
         setIsRechercheEnCours(searchParams.get('recherche') != null && searchParams.get('recherche') != "");
-    };
+    }, 500);
 
     const {replace} = useRouter();
     const pathname = usePathname();
     const inputChampsRecherche = useRef<HTMLInputElement | null>(null);
-    const changeLaValeurDeLaRechercheDebounce = useDebouncedCallback(
-        (recherche: string) => {
-            const params = new URLSearchParams(searchParams);
-            if (recherche) {
-                params.set('recherche', recherche);
-            } else {
-                params.delete('recherche');
-            }
-            replace(`${pathname}?${params.toString()}`);
-        },
-        1000
-    );
+
+    const changeLaValeurDeLaRecherche = (recherche: string = '') => {
+        setIsRechercheEnCours(true)
+        const params = new URLSearchParams(searchParams);
+        if (recherche) {
+            params.set('recherche', recherche);
+        } else {
+            params.delete('recherche');
+        }
+        replace(`${pathname}?${params.toString()}`);
+    }
+    const changeLaValeurDeLaRechercheDebounce = useDebouncedCallback(changeLaValeurDeLaRecherche, 1000);
 
     function gereLAppuieSurLaToucheEntree(e: KeyboardEvent<HTMLInputElement>) {
         if (e.key == 'Enter') {
+            changeLaValeurDeLaRecherche(inputChampsRecherche?.current?.value)
             inputChampsRecherche?.current?.blur();
         }
     }
 
-    function changeLaValeurDeLaRecherche(e: ChangeEvent<HTMLInputElement>) {
+    function rechercheChange(e: ChangeEvent<HTMLInputElement>) {
         changeLaValeurDeLaRechercheDebounce(e.target.value)
     }
 
@@ -83,11 +84,11 @@ export function Hero() {
                                defaultValue={searchParams.get('recherche')?.toString()}
                                onFocus={lanceLaRecherce}
                                onBlur={sortDeLaRecherce}
-                               onChange={changeLaValeurDeLaRecherche}
+                               onChange={rechercheChange}
                                onKeyDown={gereLAppuieSurLaToucheEntree}
                                className={clsx(
                                    'block p-3 text-xl w-full bg-orange-50 text-gray-700 border rounded-xl border-gray-400',
-                                    isRechercheEnCours?"mt-10 border-orange-600 focus:border-orange-600 focus:outline-none focus:ring focus:ring-opacity-0 focus:ring-orange-300":"")}
+                                   isRechercheEnCours ? "mt-10 border-orange-600 focus:border-orange-600 focus:outline-none focus:ring focus:ring-opacity-0 focus:ring-orange-300" : "")}
 
                                placeholder=" "/>
                         <label htmlFor="club"
