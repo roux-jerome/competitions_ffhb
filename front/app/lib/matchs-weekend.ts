@@ -25,9 +25,24 @@ export class Match {
     }
 
     public get type() {
-        if (this.libelle.toLowerCase().indexOf("garcons") >= 0 || this.libelle.toLowerCase().indexOf("masculin") >= 0 || this.libelle.toLowerCase().indexOf("masc") >= 0 || this.libelle.toLowerCase().indexOf(" m ") >= 0 || this.libelle.toLowerCase().endsWith(" m")) {
+        if (this.libelle.toLowerCase().indexOf("garcons") >= 0
+            || this.libelle.toLowerCase().indexOf("masculin") >= 0
+            || this.libelle.toLowerCase().indexOf("masc") >= 0
+            || this.libelle.toLowerCase().indexOf(" m ") >= 0
+            || this.libelle.toLowerCase().endsWith(" m")
+            || this.libelle.toLowerCase().indexOf("u11m") >= 0
+            || this.libelle.toLowerCase().indexOf("u13m") >= 0
+            || this.libelle.toLowerCase().indexOf("u15m") >= 0
+        ) {
             return "G"
-        } else if (this.libelle.toLowerCase().indexOf("feminin") >= 0 || this.libelle.toLowerCase().indexOf(" f ") >= 0 || this.libelle.toLowerCase().endsWith(" f")) {
+        } else if (
+            this.libelle.toLowerCase().indexOf("feminin") >= 0
+            || this.libelle.toLowerCase().indexOf(" f ") >= 0
+            || this.libelle.toLowerCase().endsWith(" f")
+            || this.libelle.toLowerCase().indexOf("u11f") >= 0
+            || this.libelle.toLowerCase().indexOf("u13f") >= 0
+            || this.libelle.toLowerCase().indexOf("u15f") >= 0
+        ) {
             return "F"
         } else if (this.libelle.toLowerCase().indexOf("mixte") >= 0) {
             return "Mixte"
@@ -76,20 +91,66 @@ const LOCAL_FR = {locale: "fr"};
 const FORMAT_COURT = 'd LLLL yyyy';
 
 export class MatchsDuWeekend implements Resultats {
+    private readonly dateAChercher?: DateTime<true>;
 
-    private _journees: Journee[] = [];
+    constructor(dateAChercher?: DateTime<true>) {
+        this.dateAChercher = dateAChercher
+    }
+
+
+    private _nomsEquipesParPoules: { nomEquipe: string, poule: Poule }[] = []
 
 
     public get date(): string {
-        let leJourneeLaPlusProche = this.laJourneeLaPlusProcheDeMaintenantDansLeFuture;
-        return `du ${(leJourneeLaPlusProche.debut.toFormat(FORMAT_COURT, LOCAL_FR))} au ${(leJourneeLaPlusProche.fin.toFormat(FORMAT_COURT, LOCAL_FR))}`
+        if (this.dateAChercher) {
+            return `du ${(this.dateAChercher.toFormat(FORMAT_COURT, LOCAL_FR))} au ${(this.dateAChercher.plus({day: 1}).toFormat(FORMAT_COURT, LOCAL_FR))}`
+        } else {
+            let laJourneeLaPlusProche = this.laJourneeLaPlusProcheDeMaintenantDansLeFuture;
+            return `du ${(laJourneeLaPlusProche.debut.toFormat(FORMAT_COURT, LOCAL_FR))} au ${(laJourneeLaPlusProche.fin.toFormat(FORMAT_COURT, LOCAL_FR))}`
+        }
     }
 
     private get laJourneeLaPlusProcheDeMaintenantDansLeFuture() {
 
+        const journees: Journee[] = []
+        this._nomsEquipesParPoules.forEach(nomEquipeEtPoule => {
+            let rencontre = nomEquipeEtPoule.poule.rencontres?.find(
+                rencontre => rencontre.equipe1Libelle.toLowerCase() === nomEquipeEtPoule.nomEquipe || rencontre.equipe2Libelle.toLowerCase() === nomEquipeEtPoule.nomEquipe
+            );
+            if (rencontre) {
+                let dateDebutJournee = DateTime.fromISO(nomEquipeEtPoule.poule.dateDebutJourneeSelectionee);
+                let dateFinJournee = DateTime.fromISO(nomEquipeEtPoule.poule.dateFinJourneeSelectionee);
 
-        let journeeLaPlusProcheDeMaintenant = this._journees[0]
-        this._journees.forEach(journee => {
+                let journeeAModifier = journees.find(
+                    journee =>
+                        journee.debut.equals(dateDebutJournee)
+                        || journee.debut.equals(dateDebutJournee.minus({days: 1}))
+                        || journee.debut.equals(dateDebutJournee.plus({days: 1})))
+
+                if (!journeeAModifier) {
+                    journeeAModifier = new Journee(
+                        DateTime.fromISO(nomEquipeEtPoule.poule.dateDebutJourneeSelectionee),
+                        DateTime.fromISO(nomEquipeEtPoule.poule.dateFinJourneeSelectionee)
+                    )
+                    journees.push(journeeAModifier)
+                }
+                journeeAModifier.ajouteMatch(new Match(
+                    nomEquipeEtPoule.poule.libelleCompetition, nomEquipeEtPoule.poule.url,
+                    nomEquipeEtPoule.nomEquipe,
+                    rencontre
+                ))
+                if (dateDebutJournee < journeeAModifier.debut) {
+                    journeeAModifier.debut = dateDebutJournee
+                }
+                if (dateFinJournee > journeeAModifier.fin) {
+                    journeeAModifier.fin = dateFinJournee
+                }
+
+            }
+        })
+
+        let journeeLaPlusProcheDeMaintenant = journees[0]
+        journees.forEach(journee => {
             if (Math.abs(journeeLaPlusProcheDeMaintenant.debut.diffNow().toMillis()) > Math.abs(journee.debut.diffNow().toMillis())) {
                 journeeLaPlusProcheDeMaintenant = journee
             }
@@ -99,48 +160,22 @@ export class MatchsDuWeekend implements Resultats {
     }
 
     ajoute(nomEquipe: string, poule: Poule) {
-        let rencontre = poule.rencontres!.find(
-            rencontre => rencontre.equipe1Libelle.toLowerCase() === nomEquipe || rencontre.equipe2Libelle.toLowerCase() === nomEquipe
-        );
-        if (rencontre) {
-            let dateDebutJournee = DateTime.fromISO(poule.dateDebutJourneeSelectionee);
-            let dateFinJournee = DateTime.fromISO(poule.dateFinJourneeSelectionee);
-
-            let journeeAModifier = this._journees.find(
-                journee =>
-                    journee.debut.equals(dateDebutJournee)
-                    || journee.debut.equals(dateDebutJournee.minus({days: 1}))
-                    || journee.debut.equals(dateDebutJournee.plus({days: 1})))
-
-            if (!journeeAModifier) {
-                journeeAModifier = new Journee(
-                    DateTime.fromISO(poule.dateDebutJourneeSelectionee),
-                    DateTime.fromISO(poule.dateFinJourneeSelectionee)
-                )
-                this._journees.push(journeeAModifier)
-            }
-            journeeAModifier.ajouteMatch(new Match(
-                poule.libelleCompetition, poule.url,
-                nomEquipe,
-                rencontre
-            ))
-            if(dateDebutJournee < journeeAModifier.debut ){
-                journeeAModifier.debut = dateDebutJournee
-            }
-            if(dateFinJournee > journeeAModifier.fin ){
-                journeeAModifier.fin = dateFinJournee
-            }
-        }
-
+        this._nomsEquipesParPoules.push({nomEquipe: nomEquipe, poule: poule})
     }
 
 
     public get matchs() {
-        return this.laJourneeLaPlusProcheDeMaintenantDansLeFuture
+        if(this.dateAChercher){
+            return this.laJourneeLaPlusProcheDeMaintenantDansLeFuture
+        }else{
+            return this.laJourneeLaPlusProcheDeMaintenantDansLeFuture
+        }
+
     }
 
 }
 
-export function rechercheMatchsDuWeekend(club: string) {
-    return recherche(club, new MatchsDuWeekend())
+export async function rechercheMatchsDuWeekend(club: string, dateAChercher?: DateTime<true>) {
+    return recherche(club, new MatchsDuWeekend(dateAChercher));
 }
+

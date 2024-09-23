@@ -1,8 +1,8 @@
 export function SousTitreCompetition({sousTitreCompetition}: { sousTitreCompetition: string }) {
     if (sousTitreCompetition && sousTitreCompetition !== "") {
         return <div className="flex items-center mt-4 text-gray-700 dark:text-gray-200">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                 stroke-linejoin="round" className="lucide lucide-land-plot flex-shrink-0">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"
+                 strokeLinejoin="round" className="lucide lucide-land-plot flex-shrink-0">
                 <path d="m12 8 6-3-6-3v10"/>
                 <path d="m8 11.99-5.5 3.14a1 1 0 0 0 0 1.74l8.5 4.86a2 2 0 0 0 2 0l8.5-4.86a1 1 0 0 0 0-1.74L16 12"/>
                 <path d="m6.49 12.85 11.02 6.3"/>

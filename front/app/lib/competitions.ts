@@ -48,11 +48,31 @@ export class Competition {
         formatageTexte.pop()
         this.tags.push(details[0].replaceAll("-", " "));
 
-        ["masculin", "masculine", "masculins", "feminine", "feminines", "u18", "u15", "u13", "u11"].forEach((tagAChercher: string) => {
+        ["masculin", "masculine", "masculins", "feminin", "feminine", "feminines", "u18", "u15", "u13", "u11"].forEach((tagAChercher: string) => {
             if (formatageTexte.includes(tagAChercher)) {
                 this.tags.push(tagAChercher)
             }
         })
+
+        if (formatageTexte.includes("u11m") || formatageTexte.includes("u13m") || formatageTexte.includes("u15m")) {
+            this.tags.push("masculin")
+        }
+
+        if (formatageTexte.includes("u11f") || formatageTexte.includes("u13f") || formatageTexte.includes("u15f")) {
+            this.tags.push("feminin")
+        }
+
+        if (formatageTexte.includes("u11m") || formatageTexte.includes("u11f") ) {
+            this.tags.push("u11")
+        }
+
+        if (formatageTexte.includes("u13m") || formatageTexte.includes("u13f")) {
+            this.tags.push("u13")
+        }
+
+        if (formatageTexte.includes("u15m") || formatageTexte.includes("u15f")) {
+            this.tags.push("u15")
+        }
 
         if (formatageTexte.includes("16")) {
             this.tags.push("senior")

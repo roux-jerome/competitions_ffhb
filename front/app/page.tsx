@@ -4,6 +4,14 @@ import ListeClub from "@/app/ui/clubs/liste-club";
 import CartesCompetitions from "@/app/ui/competitions/cartes-competitions";
 import {Hero} from "@/app/ui/hero";
 
+export async function generateMetadata({searchParams,}: { searchParams?: { recherche?: string; }; }) {
+    const recherche = searchParams?.recherche ? ` - ${searchParams.recherche}` : '';
+
+    return {
+        title: `Recherche FFHB${recherche}`
+    };
+}
+
 export default async function Home({searchParams,}: { searchParams?: { recherche?: string; }; }) {
 
     const recherche = searchParams?.recherche || '';

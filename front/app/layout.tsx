@@ -7,8 +7,6 @@ import Script from "next/script";
 const inter = Inter({subsets: ["latin"]});
 
 export const metadata: Metadata = {
-    title: "Recherche FFHB",
-    description: "Recherche ton équipe sur le site de la Fédération Française de handball ",
     other: {"userreport:mediaId": "adb3fa7a-514b-48bb-b0b6-bafd45bac495"}
 };
 

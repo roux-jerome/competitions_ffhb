@@ -1,8 +1,11 @@
 import {rechercheMatchsDuWeekend} from "@/app/lib/matchs-weekend";
 import {ListeMatchs} from "@/app/ui/matchs/liste-matchs";
+import {DateTime} from "luxon";
 
-export async function MatchsDuWeekEnd({club}: { club: string }) {
-    const resultatRecherche = rechercheMatchsDuWeekend(club)
+export async function MatchsDuWeekEnd({club, dateAChercher}: { club: string, dateAChercher?: DateTime<true> }) {
+    const resultatRecherche = await rechercheMatchsDuWeekend(club,dateAChercher)
+
+
     return <>
         <small className="text-gray-500">
             {resultatRecherche.date}
