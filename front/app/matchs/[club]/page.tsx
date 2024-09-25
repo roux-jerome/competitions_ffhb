@@ -3,7 +3,6 @@ import ListeClub from "@/app/ui/clubs/liste-club";
 import {Suspense} from "react";
 import {MatchsDuWeekEnd} from "@/app/ui/matchs/matchs-du-weekend";
 import Link from "next/link";
-import {DateTime} from "luxon";
 
 export async function generateMetadata({params, searchParams}: { params: { club: string }, searchParams?: { date?: string; }; }) {
     const date = searchParams?.date ? ` - ${searchParams.date}` : '';
@@ -15,11 +14,8 @@ export async function generateMetadata({params, searchParams}: { params: { club:
 }
 
 
-export default async function Matchs({params, searchParams}: { params: { club: string }, searchParams?: { date?: string; }; }) {
+export default async function Matchs({params}: { params: { club: string }; }) {
     const club = decodeURIComponent(params.club)
-
-    const dateAChercherPotentiellement = searchParams?.date ? DateTime.fromISO(searchParams.date) : undefined;
-    const dateAChercher = dateAChercherPotentiellement && dateAChercherPotentiellement.isValid ? dateAChercherPotentiellement : undefined
 
     return <>
         <Entete/>
@@ -42,7 +38,7 @@ export default async function Matchs({params, searchParams}: { params: { club: s
                 </Suspense>
                 <h1 className="font-bold text-2xl">Matchs du week-end </h1>
                 <Suspense key={club + "match"} fallback={<div>loading...</div>}>
-                    <MatchsDuWeekEnd club={club} dateAChercher={dateAChercher}/>
+                    <MatchsDuWeekEnd club={club}/>
                 </Suspense>
             </div>
         </section>

@@ -24,6 +24,7 @@ type MiniClassement struct {
 	Classement         []struct {
 		EquipeLibelle string `json:"equipe_libelle"`
 		Logo          string `json:"structure_logo"`
+		EquipeId      string `json:"equipeId"`
 	} `json:"classements"`
 }
 
@@ -52,8 +53,15 @@ type PouleSelector struct {
 		Id      string `json:"id"`
 		Libelle string `json:"libelle"`
 	} `json:"phases"`
+
+	EquipeOption []struct {
+		Id          string `json:"id"`
+		ExtEquipeId string `json:"ext_equipeId"`
+		StructureId string `json:"structureId"`
+	} `json:"equipe_options"`
 }
 type Equipe struct {
+	Id      string `json:"id"`
 	Libelle string `json:"libelle"`
 	Logo    string `json:"logo"`
 }
@@ -70,6 +78,8 @@ type Poule struct {
 	DateDebutJourneeSelectionee string      `json:"dateDebutJourneeSelectionee"`
 	DateFinJourneeSelectionee   string      `json:"dateFinJourneeSelectionee"`
 	Rencontres                  []Rencontre `json:"rencontres"`
+	JourneeCourante             int         `json:"journeeCourante"`
+	NombreDeJournees            int         `json:"nombreDeJournees"`
 }
 type Rencontre struct {
 	Date           string `json:"date"`
@@ -120,11 +130,21 @@ func scrappingDesCompetitions(urlsCompetition []string) []Poule {
 		var equipes []Equipe
 		var recherches []string
 		for _, equipe := range miniClassement.Classement {
-			equipes = append(equipes, Equipe{equipe.EquipeLibelle, equipe.Logo})
+
+			for _, equipeOption := range pouleSelector.EquipeOption {
+				if equipeOption.Id == equipe.EquipeId {
+					equipes = append(equipes, Equipe{equipeOption.ExtEquipeId, equipe.EquipeLibelle, equipe.Logo})
+				}
+			}
+
 			recherches = append(recherches, strings.ReplaceAll(equipe.EquipeLibelle, " ", "_")+"_")
 
 		}
 
+		journeeCourante, err := strconv.Atoi(journeeSelector.SelectedNumeroJournee)
+		if err != nil {
+			journeeCourante = 0
+		}
 		competition := Poule{
 			len(aggregatedCompetitions),
 			miniClassement.UrlCompetitionType + "/" + miniClassement.UrlCompetition + "/poule-" + miniClassement.Poule,
@@ -137,6 +157,8 @@ func scrappingDesCompetitions(urlsCompetition []string) []Poule {
 			TrouveLaDateDeDebutDeLaJourneeSelectionee(journees, journeeSelector),
 			TrouveLaDateDeFinDeLaJourneeSelectionee(journees, journeeSelector),
 			rencontreList.Recontres,
+			journeeCourante,
+			len(journees),
 		}
 		aggregatedCompetitions = append(aggregatedCompetitions, competition)
 

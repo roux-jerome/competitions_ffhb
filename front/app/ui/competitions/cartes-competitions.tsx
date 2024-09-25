@@ -2,6 +2,7 @@ import {SousTitreCompetition} from "@/app/ui/competitions/sous-titre-competition
 import {AnciennesPoules} from "@/app/ui/competitions/anciennes-poules";
 
 import {rechercheCompetitions} from "@/app/lib/competitions";
+import {url_competitions} from "@/lib/configuration";
 
 export default async function CartesCompetitions({recherche}: { recherche: string }) {
     const resultatRecherche = rechercheCompetitions(recherche)
@@ -15,7 +16,7 @@ export default async function CartesCompetitions({recherche}: { recherche: strin
                         <div key={competition.dernierePoule.url}
                              className="max-w-2xl pl-8 pr-1 py-2 shadow-orange-100 rounded-xl shadow-[0_10px_35px_rgba(0,0,0,.0)] flex flex-col justify-between">
                             <a
-                                href={"https://www.ffhandball.fr/competitions/saison-saison-2024-2025-20/" + competition.dernierePoule.url}
+                                href={url_competitions + competition.dernierePoule.url}
                                 tabIndex={0}
                                 role="link" target="_blank"
                                 className="group not-prose">

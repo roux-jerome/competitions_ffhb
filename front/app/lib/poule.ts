@@ -21,6 +21,7 @@ export interface Rencontre {
 }
 
 export interface Equipe {
+    id: string,
     libelle: string,
     logo: string
 }

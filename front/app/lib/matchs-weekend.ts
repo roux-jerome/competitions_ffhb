@@ -91,23 +91,14 @@ const LOCAL_FR = {locale: "fr"};
 const FORMAT_COURT = 'd LLLL yyyy';
 
 export class MatchsDuWeekend implements Resultats {
-    private readonly dateAChercher?: DateTime<true>;
-
-    constructor(dateAChercher?: DateTime<true>) {
-        this.dateAChercher = dateAChercher
-    }
 
 
     private _nomsEquipesParPoules: { nomEquipe: string, poule: Poule }[] = []
 
 
     public get date(): string {
-        if (this.dateAChercher) {
-            return `du ${(this.dateAChercher.toFormat(FORMAT_COURT, LOCAL_FR))} au ${(this.dateAChercher.plus({day: 1}).toFormat(FORMAT_COURT, LOCAL_FR))}`
-        } else {
-            let laJourneeLaPlusProche = this.laJourneeLaPlusProcheDeMaintenantDansLeFuture;
-            return `du ${(laJourneeLaPlusProche.debut.toFormat(FORMAT_COURT, LOCAL_FR))} au ${(laJourneeLaPlusProche.fin.toFormat(FORMAT_COURT, LOCAL_FR))}`
-        }
+        let laJourneeLaPlusProche = this.laJourneeLaPlusProcheDeMaintenantDansLeFuture;
+        return `du ${(laJourneeLaPlusProche.debut.toFormat(FORMAT_COURT, LOCAL_FR))} au ${(laJourneeLaPlusProche.fin.toFormat(FORMAT_COURT, LOCAL_FR))}`
     }
 
     private get laJourneeLaPlusProcheDeMaintenantDansLeFuture() {
@@ -165,17 +156,12 @@ export class MatchsDuWeekend implements Resultats {
 
 
     public get matchs() {
-        if(this.dateAChercher){
-            return this.laJourneeLaPlusProcheDeMaintenantDansLeFuture
-        }else{
-            return this.laJourneeLaPlusProcheDeMaintenantDansLeFuture
-        }
-
+        return this.laJourneeLaPlusProcheDeMaintenantDansLeFuture
     }
 
 }
 
-export async function rechercheMatchsDuWeekend(club: string, dateAChercher?: DateTime<true>) {
-    return recherche(club, new MatchsDuWeekend(dateAChercher));
+export async function rechercheMatchsDuWeekend(club: string) {
+    return recherche(club, new MatchsDuWeekend());
 }
 

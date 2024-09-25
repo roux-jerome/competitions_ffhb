@@ -1,5 +1,6 @@
 import Link from "next/link";
 import {rechercheClubs} from "@/app/lib/clubs";
+import {url_site_ffhb} from "@/lib/configuration";
 
 export default async function ListeClub({recherche, afficheSousFormeDeLien = true}: { recherche: string, afficheSousFormeDeLien?: boolean }) {
     const resultatRecherche = rechercheClubs(recherche)
@@ -12,7 +13,7 @@ export default async function ListeClub({recherche, afficheSousFormeDeLien = tru
                     .replace(".jpeg", ".webp")
                     .replace(".png", ".webp")
         }
-        return "https://www.ffhandball.fr/app/themes/ffhandball/img/logo_generic_club.png"
+        return `${url_site_ffhb}/app/themes/ffhandball/img/logo_generic_club.png`
     }
 
 
