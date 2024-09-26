@@ -4,7 +4,7 @@ import {DateTime} from "luxon";
 
 export class Match {
 
-    constructor(public libelle: string, public url: string, public nomEquipe: string, public rencontre: Rencontre) {
+    constructor(public readonly libelle: string, public readonly url: string, public readonly nomEquipe: string, public readonly rencontre: Rencontre, public readonly numeroJournee = 0) {
 
     }
 

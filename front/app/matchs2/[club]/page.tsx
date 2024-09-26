@@ -33,13 +33,10 @@ export default async function Matchs({params}: { params: { club: string }; }) {
             </div>
             <div className="container px-6 py-2 mx-auto flex flex-col items-center">
 
-                <Suspense key={club + "clubs"} fallback={<div>loading...</div>}>
+                <Suspense key={club + "clubs"} fallback={<div>Chargement...</div>}>
                     <ListeClub recherche={club} afficheSousFormeDeLien={false}/>
                 </Suspense>
-                <h1 className="font-bold text-2xl">Matchs du week-end </h1>
-                <Suspense key={club + "match"} fallback={<div>loading...</div>}>
-                    <MatchsDuWeekEnd2 club={club}/>
-                </Suspense>
+                <MatchsDuWeekEnd2 club={club}/>
             </div>
         </section>
     </>

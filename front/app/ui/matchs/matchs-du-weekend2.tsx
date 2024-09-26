@@ -1,193 +1,93 @@
-import {rechercheMatchsDuWeekend} from "@/app/lib/matchs-weekend";
+"use client"
 import {ListeMatchs} from "@/app/ui/matchs/liste-matchs";
-import {recherche, Resultats} from "@/app/lib/recherche";
-import {Poule} from "@/app/lib/poule";
+import {EquipeRencontre} from "@/app/api/matchs/[club]/route";
+import {useEffect, useState} from "react";
 import {DateTime} from "luxon";
-import * as cheerio from 'cheerio';
-import axios from "axios";
-import {id_saison} from "@/lib/configuration";
-
-export class Equipe {
-
-    constructor(public typeCompetition: string,
-                public idCompetition: string,
-                public readonly extEquipeId: string) {
-
-    }
-}
-
-class Journee {
-
-    public equipes: Equipe[] = []
-
-    constructor(
-        public debut: DateTime,
-        public fin: DateTime
-    ) {
-    }
-
-    public ajouteEquipe(equipe: Equipe) {
-        this.equipes.push(equipe);
-    }
-}
-
-class Journees implements Resultats {
-    public journees: Journee[] = []
-
-    ajoute(nomEquipe: string, poule: Poule) {
-        const extEquipeId = poule.equipes?.find(equipe => equipe.libelle.toLowerCase() === nomEquipe)?.id
-        if (extEquipeId) {
-            let dateDebutJournee = DateTime.fromISO(poule.dateDebutJourneeSelectionee);
-            let dateFinJournee = DateTime.fromISO(poule.dateFinJourneeSelectionee);
-
-            let journeeAModifier = this.journees.find(
-                journee =>
-                    journee.debut.equals(dateDebutJournee)
-                    || journee.debut.equals(dateDebutJournee.minus({days: 1}))
-                    || journee.debut.equals(dateDebutJournee.plus({days: 1})))
+import {Match} from "@/app/lib/matchs-weekend";
+import {FORMAT_COURT, LOCAL_FR} from "@/lib/configuration";
+import {ChevronsLeft, ChevronsRight} from "lucide-react";
 
 
-            if (!journeeAModifier) {
+export function MatchsDuWeekEnd2({club}: { club: string }) {
+    const [equipeRencontre, setEquipeRencontre] = useState<EquipeRencontre[]>([])
+    const [decalage, setDecalage] = useState(0)
+    const [matchs, setMatchs] = useState<Match[]>([])
+    const [isLoading, setLoading] = useState(true)
 
+    useEffect(() => {
+        fetch(`/api/matchs/${club}`)
+            .then((res) => res.json())
+            .then((data) => {
+                setEquipeRencontre(data)
+                metAJourMatch(data, decalage)
+                setLoading(false)
+            })
+    }, [club, decalage])
 
-                journeeAModifier = new Journee(
-                    DateTime.fromISO(poule.dateDebutJourneeSelectionee),
-                    DateTime.fromISO(poule.dateFinJourneeSelectionee),
-                )
-                this.journees.push(journeeAModifier)
-            }
-            let urlPoule = poule.url.split("/");
-            journeeAModifier.ajouteEquipe(new Equipe(
-                urlPoule[0],
-                urlPoule[1],
-                extEquipeId
+    function metAJourMatch(equipeRencontres: EquipeRencontre[], decalage: number) {
+        let weekend = DateTime.now().plus({week: decalage});
+        const matchsTemporaire = equipeRencontres
+            .filter(equipeRecontre => {
+                const date = DateTime.fromSQL(equipeRecontre.recontre.date || "")
+                if (date.isValid) {
+                    return laDateEstDansLaMemeSemaineQuUneAutreDate(date, weekend)
+                } else {
+                    return Number(equipeRecontre.equipe.numeroJourneeCourante) + decalage === Number(equipeRecontre.recontre.journeeNumero)
+                }
+            })
+            .map(equipeRecontre => new Match(
+                equipeRecontre.recontre.phaseLibelle,
+                equipeRecontre.equipe.urlPoule,
+                equipeRecontre.equipe.nomEquipe,
+                {date: equipeRecontre.recontre.date || "", equipe1Libelle: equipeRecontre.recontre.equipe1Libelle, equipe2Libelle: equipeRecontre.recontre.equipe2Libelle},
+                Number(equipeRecontre.equipe.numeroJourneeCourante) + decalage,
             ))
-            if (dateDebutJournee < journeeAModifier.debut) {
-                journeeAModifier.debut = dateDebutJournee
-            }
-            if (dateFinJournee > journeeAModifier.fin) {
-                journeeAModifier.fin = dateFinJournee
-            }
-        }
-
+            .sort((a, b) => a.dateRencontre.toMillis() - b.dateRencontre.toMillis())
+        setMatchs(matchsTemporaire)
     }
 
-    public get laJourneeLaPlusProcheDeMaintenantDansLeFuture() {
-        let journeeLaPlusProcheDeMaintenant = this.journees[0]
-        this.journees.forEach(journee => {
-            if (Math.abs(journeeLaPlusProcheDeMaintenant.debut.diffNow().toMillis()) > Math.abs(journee.debut.diffNow().toMillis())) {
-                journeeLaPlusProcheDeMaintenant = journee
+
+    function calculeDate() {
+        let dateMinimum: DateTime | undefined
+        let dateMaximum: DateTime | undefined
+        matchs.forEach(match => {
+            if (!dateMinimum || dateMinimum > match.dateRencontre) {
+                dateMinimum = match.dateRencontre
+            }
+            if (!dateMaximum || dateMaximum < match.dateRencontre) {
+                dateMaximum = match.dateRencontre
             }
         })
-
-        return journeeLaPlusProcheDeMaintenant
+        return dateMinimum && dateMaximum && <><p>du {dateMinimum.toFormat(FORMAT_COURT, LOCAL_FR)}</p><p> au {dateMaximum.toFormat(FORMAT_COURT, LOCAL_FR)}</p></>
     }
 
-}
 
-function decipher(strBase64: string, key: string): Resultat {
-    const str = Buffer.from(strBase64, 'base64').toString()
-    let result = ''
-    const keyLen = key.length
-    for (let i = 0; i < str.length; i++) {
-        result += String.fromCharCode(str.charCodeAt(i) ^ key.charCodeAt(i % keyLen))
+    function decalleLeWeekEnd(decalageAMetreAJour: number) {
+        setDecalage(decalageAMetreAJour)
+        metAJourMatch(equipeRencontre, decalageAMetreAJour)
     }
-
-    return JSON.parse(result)
-}
-
-const request = async (equipe: Equipe, cfkKey: string): Promise<Resultat> => {
-    const {data} = await axios.request({
-        url: 'https://www.ffhandball.fr/wp-json/competitions/v1/computeBlockAttributes',
-        method: 'GET',
-        params: {
-            block: 'competitions---rencontre-list',
-            ext_saison_id: id_saison,
-            url_competition_type: equipe.typeCompetition,
-            url_competition: equipe.idCompetition,
-            ext_equipe_id: equipe.extEquipeId
-        },
-    },)
-    return decipher(data, cfkKey)
-}
-
-export interface Resultat {
-
-    /** Rencontres */
-    rencontres: Array<{
-        /** Id */
-        id: string
-        /** Ext_rencontreId */
-        ext_rencontreId: string
-        /** PouleId */
-        pouleId: string
-        /** Equipe1Id */
-        equipe1Id: string
-        /** Equipe2Id */
-        equipe2Id: string
-        /** Equipe1Score */
-        equipe1Score: string
-        /** Equipe2Score */
-        equipe2Score: string
-        /** Equipe1ScoreMT */
-        equipe1ScoreMT: string
-        /** Equipe2ScoreMT */
-        equipe2ScoreMT: string
-        /** Date */
-        date: string
-        /** FdmCode */
-        fdmCode: string
-        /** EquipementId */
-        equipementId: string
-        /** Arbitre1 */
-        arbitre1: string
-        /** Arbitre1Id */
-        arbitre1Id: string
-        /** Arbitre2 */
-        arbitre2: string
-        /** Arbitre2Id */
-        arbitre2Id: string
-        /** DateDernierUpdateEnfants */
-        dateDernierUpdateEnfants: string
-        /** JourneeNumero */
-        journeeNumero: string
-        /** Equipe1Libelle */
-        equipe1Libelle: string
-        /** Equipe2Libelle */
-        equipe2Libelle: string
-        /** Equipe1ShowLogo */
-        equipe1ShowLogo: string
-        /** Equipe2ShowLogo */
-        equipe2ShowLogo: string
-        /** Structure1Logo */
-        structure1Logo: string
-        /** Structure2Logo */
-        structure2Logo: string
-        /** PhaseLibelle */
-        phaseLibelle: string
-        /** ExtPouleId */
-        extPouleId: string
-    }>
-}
-
-export async function MatchsDuWeekEnd2({club}: { club: string }) {
-    const resultatRecherche = await rechercheMatchsDuWeekend(club)
-    let resultat = recherche(club, new Journees());
-
-    const $ = await cheerio.fromURL('https://www.ffhandball.fr/');
-    let dataCFK = $('body').attr('data-cfk');
-
-    const details = await Promise.allSettled(resultat.laJourneeLaPlusProcheDeMaintenantDansLeFuture.equipes.map(equipe => {
-        return request(equipe, dataCFK!!);
-    }))
-    console.log("=====")
-    console.log(JSON.stringify(details))
 
     return <>
-        <small
-            className="text-gray-500">
-            {resultatRecherche.date}
-        </small>
+        <h1 className="font-bold pt-10 text-2xl">Matchs</h1>
+        <div className="flex">
+            <div className="content-center mr-3 text-2xl">
+                <button onClick={() => decalleLeWeekEnd(decalage - 1)} className="text-orange-500">
+                    <ChevronsLeft className="h-12 w-12"/>
+                </button>
+            </div>
+            <div className="text-center text-xl md:text-2xl">
+
+                <h1 className="font-bold text-gray-500">
+                    {isLoading && <div>Chargement...</div>}
+                    {calculeDate()}
+                </h1>
+            </div>
+            <div className="content-center text-2xl">
+                <button onClick={() => decalleLeWeekEnd(decalage + 1)} className="text-orange-500">
+                    <ChevronsRight className="h-12 w-12"/>
+                </button>
+            </div>
+        </div>
         <div className="container grid md:grid-cols-2 md:gap-20">
             <div className="container flex flex-col justify-start">
                 <div className="flex items-center mt-6">
@@ -196,7 +96,6 @@ export async function MatchsDuWeekEnd2({club}: { club: string }) {
                             d="M23.121,9.069,15.536,1.483a5.008,5.008,0,0,0-7.072,0L.879,9.069A2.978,2.978,0,0,0,0,11.19v9.817a3,3,0,0,0,3,3H21a3,3,0,0,0,3-3V11.19A2.978,2.978,0,0,0,23.121,9.069ZM15,22.007H9V18.073a3,3,0,0,1,6,0Zm7-1a1,1,0,0,1-1,1H17V18.073a5,5,0,0,0-10,0v3.934H3a1,1,0,0,1-1-1V11.19a1.008,1.008,0,0,1,.293-.707L9.878,2.9a3.008,3.008,0,0,1,4.244,0l7.585,7.586A1.008,1.008,0,0,1,22,11.19Z"/>
                     </svg>
                     <h2 className="font-semibold px-2 pt-2">
-
                         A domicile
                     </h2>
                 </div>
@@ -205,7 +104,8 @@ export async function MatchsDuWeekEnd2({club}: { club: string }) {
                     <span className="inline-block w-3 h-1 ml-1 bg-orange-500 rounded-full"></span>
                     <span className="inline-block w-1 h-1 ml-1 bg-orange-500 rounded-full"></span>
                 </div>
-                <ListeMatchs matchs={resultatRecherche.matchs.domicile}/>
+                {isLoading && <div>Chargement...</div>}
+                <ListeMatchs matchs={matchs.filter(match => match.estADomicile)}/>
             </div>
             <div className="container flex flex-col justify-start">
                 <div className="flex items-center mt-6">
@@ -223,9 +123,14 @@ export async function MatchsDuWeekEnd2({club}: { club: string }) {
                     <span className="inline-block w-3 h-1 ml-1 bg-orange-500 rounded-full"></span>
                     <span className="inline-block w-1 h-1 ml-1 bg-orange-500 rounded-full"></span>
                 </div>
-                <ListeMatchs matchs={resultatRecherche.matchs.exterieur}/>
+                {isLoading && <div>Chargement...</div>}
+                <ListeMatchs matchs={matchs.filter(match => !match.estADomicile)}/>
             </div>
         </div>
-    </>
-        ;
+    </>;
+}
+
+
+function laDateEstDansLaMemeSemaineQuUneAutreDate(date: DateTime, autreDate: DateTime): boolean {
+    return date.weekNumber === autreDate.weekNumber && date.year === autreDate.year;
 }

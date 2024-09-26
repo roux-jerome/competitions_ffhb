@@ -15,9 +15,9 @@ export interface Poule {
 }
 
 export interface Rencontre {
-    "date": string,
-    "equipe1Libelle": string,
-    "equipe2Libelle": string
+    date: string,
+    equipe1Libelle: string,
+    equipe2Libelle: string
 }
 
 export interface Equipe {
