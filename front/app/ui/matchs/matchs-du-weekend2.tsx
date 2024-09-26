@@ -1,11 +1,11 @@
 "use client"
 import {ListeMatchs} from "@/app/ui/matchs/liste-matchs";
-import {EquipeRencontre} from "@/app/api/matchs/[club]/route";
 import {useEffect, useState} from "react";
 import {DateTime} from "luxon";
 import {Match} from "@/app/lib/matchs-weekend";
 import {FORMAT_COURT, LOCAL_FR} from "@/lib/configuration";
 import {ChevronsLeft, ChevronsRight} from "lucide-react";
+import {EquipeRencontre} from "@/app/lib/matchs-weekend2";
 
 
 export function MatchsDuWeekEnd2({club}: { club: string }) {
