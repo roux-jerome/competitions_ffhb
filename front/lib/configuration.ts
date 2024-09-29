@@ -4,4 +4,5 @@ export const id_long_saison = `saison-saison-2024-2025-${id_saison}`
 export const url_competitions = `${url_site_ffhb}/competitions/${id_long_saison}/`
 
 export const LOCAL_FR = {locale: "fr"};
-export const FORMAT_COURT = 'd LLLL yyyy';
+export const FORMAT_COURT_SANS_ANNEES = 'd LLL';
+export const FORMAT_COURT = 'd LLL yyyy';

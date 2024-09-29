@@ -1,5 +1,5 @@
-export class EquipeRencontre {
-    constructor(public readonly equipe: Equipe, public readonly recontre: Rencontre) {
+export class EquipeRencontreJournee {
+    constructor(public readonly equipe: Equipe, public readonly recontre: Rencontre, public readonly journeeRencontre?: JourneeRencontre) {
     }
 }
 
@@ -20,7 +20,12 @@ export class Equipe {
     }
 }
 
-export interface Rencontre{
+export interface JourneeRencontre {
+    "journee_numero": number,
+    "date_debut": string,
+}
+
+export interface Rencontre {
     equipe2Libelle: string;
     equipe1Libelle: string;
     phaseLibelle: string;

@@ -1,106 +1,99 @@
 "use client"
-import {ListeMatchs} from "@/app/ui/matchs/liste-matchs";
 import {useEffect, useState} from "react";
-import {DateTime} from "luxon";
-import {Match} from "@/app/lib/matchs-weekend";
-import {FORMAT_COURT, FORMAT_COURT_SANS_ANNEES, LOCAL_FR} from "@/lib/configuration";
+import {JourneeDePoule, laJourneeLaPlusProcheDeMaintenantDansLeFuture} from "@/app/lib/matchs-weekend3";
 import {ChevronsLeft, ChevronsRight} from "lucide-react";
-import {EquipeRencontreJournee} from "@/app/lib/matchs-weekend2";
-import {Chargement} from "@/app/ui/Chargement";
+import {ListeMatchs} from "@/app/ui/matchs/liste-matchs";
+import {DateTime} from "luxon";
+import {FORMAT_COURT, FORMAT_COURT_SANS_ANNEES, LOCAL_FR} from "@/lib/configuration";
+import {Match} from "@/app/lib/matchs-weekend";
 
 
-export function MatchsDuWeekEnd2({club}: { club: string }) {
-    const [equipeRencontre, setEquipeRencontre] = useState<EquipeRencontreJournee[]>([])
-    const [equipeRencontreWeekend, setEquipeRencontreWeekend] = useState<EquipeRencontreJournee[]>([])
+export default function MatchsDesWeekendsClient({club, journeesDePouleInitiale}: { club: string, journeesDePouleInitiale: JourneeDePoule[] }) {
+    const [journeesDePoule, setJourneesDePoule] = useState(journeesDePouleInitiale)
     const [decalage, setDecalage] = useState(0)
     const [isLoading, setLoading] = useState(true)
 
     useEffect(() => {
-        fetch(`/api/matchs/${club}`)
+        fetch(`/api/matchs3/${club}`)
             .then((res) => res.json())
             .then((data) => {
-                setEquipeRencontre(data)
-                metAJourEquipesRencontreWeekend(data, decalage)
+                setJourneesDePoule(data)
                 setLoading(false)
             })
     }, [club, decalage])
 
-    function getMatchs() {
-        return equipeRencontreWeekend
-            .map(equipeRecontre => new Match(
-                equipeRecontre.recontre.phaseLibelle,
-                equipeRecontre.equipe.urlPoule,
-                equipeRecontre.equipe.nomEquipe,
-                {date: equipeRecontre.recontre.date || "", equipe1Libelle: equipeRecontre.recontre.equipe1Libelle, equipe2Libelle: equipeRecontre.recontre.equipe2Libelle},
-                Number(equipeRecontre.equipe.numeroJourneeCourante) + decalage
-            ))
-    }
-
-    function metAJourEquipesRencontreWeekend(equipeRencontres: EquipeRencontreJournee[], decalage: number) {
-        let weekend = DateTime.now().plus({week: decalage});
-        const resultat = equipeRencontres
-            .filter(equipeRecontre => {
-                const date = DateTime.fromSQL(equipeRecontre.recontre.date || "")
-                if (date.isValid) {
-                    return laDateEstDansLaMemeSemaineQuUneAutreDate(date, weekend)
-                } else {
-                    return Number(equipeRecontre.equipe.numeroJourneeCourante) + decalage === Number(equipeRecontre.recontre.journeeNumero)
-                }
-            })
-            .sort((a, b) => DateTime.fromSQL(a.recontre.date || "").toMillis() - DateTime.fromSQL(b.recontre.date || "").toMillis())
-        setEquipeRencontreWeekend(resultat)
-    }
-
-
     function calculeDate() {
-        if (equipeRencontreWeekend.length > 0) {
-            let dateDebutWeekend = DateTime.fromSQL(equipeRencontreWeekend[0].equipe.dateJourneeCourante).plus({week: decalage});
-            let dateFinWeekEnd = dateDebutWeekend.plus({day: 1});
-            if (dateDebutWeekend.year === dateFinWeekEnd.year) {
-                if (dateDebutWeekend.month === dateFinWeekEnd.month) {
-                    return <><p>du {dateDebutWeekend.day} au {dateFinWeekEnd.toFormat(FORMAT_COURT, LOCAL_FR)}</p></>
-                } else {
-                    return <><p>du {dateDebutWeekend.toFormat(FORMAT_COURT_SANS_ANNEES, LOCAL_FR)}</p><p> au {dateFinWeekEnd.toFormat(FORMAT_COURT, LOCAL_FR)}</p></>
-                }
-
+        let dateDebutWeekend = laJourneeLaPlusProcheDeMaintenantDansLeFuture(journeesDePoule, decalage);
+        let dateFinWeekEnd = dateDebutWeekend.plus({day: 1});
+        if (dateDebutWeekend.year === dateFinWeekEnd.year) {
+            if (dateDebutWeekend.month === dateFinWeekEnd.month) {
+                return <><p>du {dateDebutWeekend.day} au {dateFinWeekEnd.toFormat(FORMAT_COURT, LOCAL_FR)}</p></>
             } else {
-                return <><p>du {dateDebutWeekend.toFormat(FORMAT_COURT, LOCAL_FR)}</p><p> au {dateFinWeekEnd.toFormat(FORMAT_COURT, LOCAL_FR)}</p></>
+                return <><p>du {dateDebutWeekend.toFormat(FORMAT_COURT_SANS_ANNEES, LOCAL_FR)}</p><p> au {dateFinWeekEnd.toFormat(FORMAT_COURT, LOCAL_FR)}</p></>
             }
+
         } else {
-            return ""
+            return <><p>du {dateDebutWeekend.toFormat(FORMAT_COURT, LOCAL_FR)}</p><p> au {dateFinWeekEnd.toFormat(FORMAT_COURT, LOCAL_FR)}</p></>
         }
     }
 
+    function getMatchs() {
+        return journeesDePoule
+            .filter(journeeDePoule => {
+                const date = DateTime.fromSQL(journeeDePoule.dateRencontre || "")
+                if (date.isValid) {
+                    return laDateEstDansLaMemeSemaineQuUneAutreDate(date, laJourneeLaPlusProcheDeMaintenantDansLeFuture(journeesDePoule, decalage))
+                } else {
+                    let journeeDePouleInitiale = journeesDePouleInitiale.find(journeeDePouleInitiale => journeeDePouleInitiale.urlPoule === journeeDePoule.urlPoule)!!;
+                    return (journeeDePouleInitiale.numeroJournee + decalage) === journeeDePoule.numeroJournee
+                }
+            })
+            .filter(journeeDePoule => journeeDePoule.equipe1Libelle)
+            .map(journeeDePoule =>
+                new Match(journeeDePoule.libellePoule, journeeDePoule.urlPoule, journeeDePoule.nomEquipe, {
+                    date: journeeDePoule.dateRencontre || "",
+                    equipe1Libelle: journeeDePoule.equipe1Libelle!!,
+                    equipe2Libelle: journeeDePoule.equipe2Libelle!!
+                }, journeeDePoule.numeroJournee)
+            )
+            .sort((a, b) => a.dateRencontre.toMillis() - b.dateRencontre.toMillis())
+    }
+
+    function laDateEstDansLaMemeSemaineQuUneAutreDate(date: DateTime, autreDate: DateTime): boolean {
+        return date.weekNumber === autreDate.weekNumber && date.year === autreDate.year;
+    }
 
     function decalleLeWeekEnd(decalageAMetreAJour: number) {
         setDecalage(decalageAMetreAJour)
-        metAJourEquipesRencontreWeekend(equipeRencontre, decalageAMetreAJour)
     }
 
     return <>
         <h1 className="font-bold pt-10 text-2xl">Matchs</h1>
         <div className="flex">
-            {isLoading && <Chargement/> || <>
-                <div className="content-center mr-3 text-2xl">
+
+            <div className="content-center mr-3 text-2xl">
+                {!isLoading &&
                     <button type="button" onClick={() => decalleLeWeekEnd(decalage - 1)}
                             className="text-white outline-none focus:outline-none rounded-full shadow-lg hover:bg-orange-700 active:bg-orange-700 bg-orange-500 ease-linear transition-all duration-150">
                         <ChevronsLeft className="h-12 w-12"/>
                     </button>
-                </div>
-                <div className="text-center flex text-xl md:text-2xl">
+                }
+            </div>
+            <div className="text-center flex text-xl md:text-2xl">
 
-                    <h1 className="font-bold text-gray-500 self-center">
+                <h1 className="font-bold text-gray-500 self-center">
 
-                        {calculeDate()}
-                    </h1>
-                </div>
-                <div className="content-center ml-3 text-2xl">
+                    {calculeDate()}
+                </h1>
+            </div>
+            <div className="content-center ml-3 text-2xl">
+                {!isLoading &&
                     <button onClick={() => decalleLeWeekEnd(decalage + 1)}
                             className="text-white outline-none focus:outline-none rounded-full shadow-lg hover:bg-orange-700 active:bg-orange-700 bg-orange-500 ease-linear transition-all duration-150">
                         <ChevronsRight className="h-12 w-12"/>
                     </button>
-                </div>
-            </>}
+                }
+            </div>
         </div>
         <div className="container grid md:grid-cols-2 md:gap-20">
             <div className="container flex flex-col justify-start">
@@ -140,9 +133,4 @@ export function MatchsDuWeekEnd2({club}: { club: string }) {
             </div>
         </div>
     </>;
-}
-
-
-function laDateEstDansLaMemeSemaineQuUneAutreDate(date: DateTime, autreDate: DateTime): boolean {
-    return date.weekNumber === autreDate.weekNumber && date.year === autreDate.year;
 }

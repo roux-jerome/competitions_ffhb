@@ -31,6 +31,11 @@ export async function recupereLesRecontres(typeCompetition: string, idCompetitio
 interface ResultatFFHB {
 
     rencontres: RecontreFFHB[]
+    poule: { journees: string }
+}
+export interface JourneeFFHB {
+    "journee_numero": number,
+    "date_debut": string,
 }
 
 interface RecontreFFHB {

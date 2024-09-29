@@ -3,7 +3,7 @@ import {DateTime} from "luxon";
 import {recherche, Resultats} from "@/app/lib/recherche";
 import {Poule} from "@/app/lib/poule";
 import {recupereLaCleCFK, recupereLesRecontres} from "@/app/lib/api-ffhb";
-import {Equipe, EquipeRencontre} from "@/app/lib/matchs-weekend2";
+import {Equipe, EquipeRencontreJournee, JourneeRencontre} from "@/app/lib/matchs-weekend2";
 
 
 export async function GET(_: NextRequest, {params}: { params: { club: string } }) {
@@ -14,7 +14,15 @@ export async function GET(_: NextRequest, {params}: { params: { club: string } }
     const details = await Promise.allSettled(
         equipes.map(equipe =>
             recupereLesRecontres(equipe.typeCompetition, equipe.idCompetition, equipe.extEquipeId, cleCFK)
-                .then(resultat => resultat.rencontres.map(rencontre => new EquipeRencontre(equipe, rencontre)))
+                .then(resultat => {
+                    const journeesRecontre: JourneeRencontre[] = JSON.parse(resultat.poule.journees)
+                    return resultat.rencontres.map(rencontre =>
+                        new EquipeRencontreJournee(
+                            equipe,
+                            rencontre,
+                            journeesRecontre.find(journeesRecontre => journeesRecontre.journee_numero === Number(rencontre.journeeNumero)
+                            )))
+                })
         ))
     logErreurs(details);
 
@@ -90,6 +98,6 @@ class Journees implements Resultats {
     }
 }
 
-function logErreurs(details: Array<PromiseSettledResult<Awaited<Promise<EquipeRencontre[]>>>>) {
+function logErreurs(details: Array<PromiseSettledResult<Awaited<Promise<EquipeRencontreJournee[]>>>>) {
     details.filter(detail => detail.status === "rejected").forEach(console.error);
 }

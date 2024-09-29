@@ -6,7 +6,7 @@ export function ListeMatchs({matchs}: { matchs: Match[] }) {
 
         <a key={`${match.url}-${match.rencontre.equipe1Libelle}-${match.rencontre.equipe2Libelle}`}
            className="flex items-center justify-between px-1 hover:bg-blue-100 duration-300 hover:rounded transition-colors pb-4 mb-1 border-b-2 bt-6 "
-           href={url_competitions + match.url + (match.numeroJournee != 0 ? `/journee-${match.numeroJournee}` : "")} target="_blank"
+           href={url_competitions + match.url + (match.numeroJournee > 0 ? `/journee-${match.numeroJournee}` : "")} target="_blank"
         >
             <div className="grid grid-cols-2 w-full">
                 <div>
