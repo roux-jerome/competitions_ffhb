@@ -1,66 +1,8 @@
-import {Poule, Rencontre} from "@/app/lib/poule";
+import {Poule} from "@/app/lib/poule";
 import {recherche, Resultats} from "@/app/lib/recherche";
 import {DateTime} from "luxon";
-
-export class Match {
-
-    constructor(public readonly libelle: string, public readonly url: string, public readonly nomEquipe: string, public readonly rencontre: Rencontre, public readonly numeroJournee = 0) {
-
-    }
-
-    public get categorie() {
-        if (this.libelle.toLowerCase().indexOf("u11") >= 0 || this.libelle.toLowerCase().startsWith("-11 ")) {
-            return "-11 "
-        } else if (this.libelle.toLowerCase().indexOf("u13") >= 0) {
-            return "-13 "
-        } else if (this.libelle.toLowerCase().indexOf("u15") >= 0) {
-            return "-15 "
-        } else if (this.libelle.toLowerCase().indexOf("u18") >= 0) {
-            return "-18 "
-        } else if (this.libelle.toLowerCase().indexOf("plateau") >= 0 || this.libelle.toLowerCase().indexOf("minihand") >= 0) {
-            return "mini "
-        } else {
-            return "S"
-        }
-    }
-
-    public get type() {
-        if (this.libelle.toLowerCase().indexOf("garcons") >= 0
-            || this.libelle.toLowerCase().indexOf("masculin") >= 0
-            || this.libelle.toLowerCase().indexOf("masc") >= 0
-            || this.libelle.toLowerCase().indexOf(" m ") >= 0
-            || this.libelle.toLowerCase().endsWith(" m")
-            || this.libelle.toLowerCase().indexOf("u11m") >= 0
-            || this.libelle.toLowerCase().indexOf("u13m") >= 0
-            || this.libelle.toLowerCase().indexOf("u15m") >= 0
-        ) {
-            return "G"
-        } else if (
-            this.libelle.toLowerCase().indexOf("feminin") >= 0
-            || this.libelle.toLowerCase().indexOf(" f ") >= 0
-            || this.libelle.toLowerCase().endsWith(" f")
-            || this.libelle.toLowerCase().indexOf("u11f") >= 0
-            || this.libelle.toLowerCase().indexOf("u13f") >= 0
-            || this.libelle.toLowerCase().indexOf("u15f") >= 0
-        ) {
-            return "F"
-        } else if (this.libelle.toLowerCase().indexOf("mixte") >= 0) {
-            return "Mixte"
-        } else {
-            return ""
-        }
-    }
-
-    public get dateRencontre() {
-        return DateTime.fromFormat(this.rencontre.date, 'yyyy-MM-dd HH:mm:ss.SSS')
-    }
-
-    public get estADomicile() {
-        return this.rencontre.equipe1Libelle.toLowerCase() === this.nomEquipe
-    }
-
-
-}
+import {Match} from "@/app/lib/matchs-weekend3";
+import {FORMAT_COURT, LOCAL_FR} from "@/lib/configuration";
 
 class Journee {
     private _domicile: Match[] = []
@@ -87,8 +29,6 @@ class Journee {
 
 }
 
-const LOCAL_FR = {locale: "fr"};
-const FORMAT_COURT = 'd LLLL yyyy';
 
 export class MatchsDuWeekend implements Resultats {
 

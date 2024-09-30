@@ -1,5 +1,5 @@
-import {Match} from "@/app/lib/matchs-weekend";
 import {url_competitions} from "@/lib/configuration";
+import {Match} from "@/app/lib/matchs-weekend3";
 
 export function ListeMatchs({matchs}: { matchs: Match[] }) {
     return matchs.map(match =>

@@ -1,11 +1,10 @@
 "use client"
 import {useEffect, useState} from "react";
-import {calculeDateJournee, JourneeDePoule, laDateEstDansLaMemeSemaineQuUneAutreDate} from "@/app/lib/matchs-weekend3";
+import {calculeDateJournee, JourneeDePoule, laDateEstDansLaMemeSemaineQuUneAutreDate, Match} from "@/app/lib/matchs-weekend3";
 import {ChevronsLeft, ChevronsRight} from "lucide-react";
 import {ListeMatchs} from "@/app/ui/matchs/liste-matchs";
 import {DateTime} from "luxon";
 import {FORMAT_COURT, FORMAT_COURT_SANS_ANNEES, LOCAL_FR} from "@/lib/configuration";
-import {Match} from "@/app/lib/matchs-weekend";
 
 
 export default function MatchsDesWeekendsClient({club, journeesDePouleInitiale}: { club: string, journeesDePouleInitiale: JourneeDePoule[] }) {
@@ -14,7 +13,7 @@ export default function MatchsDesWeekendsClient({club, journeesDePouleInitiale}:
     const [isLoading, setLoading] = useState(true)
 
     useEffect(() => {
-        fetch(`/api/matchs3/${club}`)
+        fetch(`/api/matchs/${club}`)
             .then((res) => res.json())
             .then((data) => {
                 setJourneesDePoule(data)

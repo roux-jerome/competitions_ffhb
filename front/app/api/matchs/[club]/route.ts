@@ -1,103 +1,44 @@
 import {NextRequest} from "next/server";
-import {DateTime} from "luxon";
-import {recherche, Resultats} from "@/app/lib/recherche";
-import {Poule} from "@/app/lib/poule";
-import {recupereLaCleCFK, recupereLesRecontres} from "@/app/lib/api-ffhb";
-import {Equipe, EquipeRencontreJournee, JourneeRencontre} from "@/app/lib/matchs-weekend2";
+import {JourneeFFHB, recupereLaCleCFK, recupereLesRecontres} from "@/app/lib/api-ffhb";
+import {rechercheCoteServeurLesJourneesDePoules, JourneeDePoule} from "@/app/lib/matchs-weekend3";
 
 
 export async function GET(_: NextRequest, {params}: { params: { club: string } }) {
-    let resultat = recherche(params.club, new Journees());
-    let equipes = resultat.laJourneeLaPlusProcheDeMaintenantDansLeFuture.equipes;
+    let journeesDePoule = rechercheCoteServeurLesJourneesDePoules(params.club);
+
 
     let cleCFK = await recupereLaCleCFK();
     const details = await Promise.allSettled(
-        equipes.map(equipe =>
-            recupereLesRecontres(equipe.typeCompetition, equipe.idCompetition, equipe.extEquipeId, cleCFK)
+        journeesDePoule.map(journeeDePoule => {
+            let urlPouleSplit = journeeDePoule.urlPoule.split("/");
+            const typeCompetition = urlPouleSplit[0]
+            const idCompetition = urlPouleSplit[1]
+            return recupereLesRecontres(typeCompetition, idCompetition, journeeDePoule.extEquipeId, cleCFK)
                 .then(resultat => {
-                    const journeesRecontre: JourneeRencontre[] = JSON.parse(resultat.poule.journees)
-                    return resultat.rencontres.map(rencontre =>
-                        new EquipeRencontreJournee(
-                            equipe,
-                            rencontre,
-                            journeesRecontre.find(journeesRecontre => journeesRecontre.journee_numero === Number(rencontre.journeeNumero)
-                            )))
+                    const journeesFFHB: JourneeFFHB[] = JSON.parse(resultat.poule.journees)
+
+                    return resultat.rencontres.map(rencontre => {
+                        let journee = journeesFFHB.find(journeesRecontre => journeesRecontre.journee_numero === Number(rencontre.journeeNumero))!!;
+                        return {
+                            urlPoule: journeeDePoule.urlPoule,
+                            libellePoule: journeeDePoule.libellePoule,
+                            numeroJournee: journee.journee_numero,
+                            dateDebutJournee: journee.date_debut,
+                            nomEquipe: journeeDePoule.nomEquipe,
+                            extEquipeId: journeeDePoule.extEquipeId,
+                            dateRencontre: rencontre.date,
+                            equipe1Libelle: rencontre.equipe1Libelle,
+                            equipe2Libelle: rencontre.equipe2Libelle
+                        } as JourneeDePoule
+                    })
                 })
-        ))
+        }))
     logErreurs(details);
 
     return Response.json(details.filter(detail => detail.status === "fulfilled").flatMap(detail => detail.value))
 }
 
-class Journee {
 
-    public equipes: Equipe[] = []
-
-    constructor(
-        public debut: DateTime,
-        public fin: DateTime
-    ) {
-    }
-
-    public ajouteEquipe(equipe: Equipe) {
-        this.equipes.push(equipe);
-    }
-}
-
-class Journees implements Resultats {
-    public journees: Journee[] = []
-
-    ajoute(nomEquipe: string, poule: Poule) {
-        const extEquipeId = poule.equipes?.find(equipe => equipe.libelle.toLowerCase() === nomEquipe)?.id
-        if (extEquipeId) {
-            let dateDebutJournee = DateTime.fromISO(poule.dateDebutJourneeSelectionee);
-            let dateFinJournee = DateTime.fromISO(poule.dateFinJourneeSelectionee);
-
-            let journeeAModifier = this.journees.find(
-                journee =>
-                    journee.debut.equals(dateDebutJournee)
-                    || journee.debut.equals(dateDebutJournee.minus({days: 1}))
-                    || journee.debut.equals(dateDebutJournee.plus({days: 1})))
-
-
-            if (!journeeAModifier) {
-
-
-                journeeAModifier = new Journee(
-                    DateTime.fromISO(poule.dateDebutJourneeSelectionee),
-                    DateTime.fromISO(poule.dateFinJourneeSelectionee),
-                )
-                this.journees.push(journeeAModifier)
-            }
-            journeeAModifier.ajouteEquipe(new Equipe(
-                poule.url,
-                nomEquipe,
-                extEquipeId,
-                `${poule.journeeCourante}`,
-                poule.dateDebutJourneeSelectionee
-            ))
-            if (dateDebutJournee < journeeAModifier.debut) {
-                journeeAModifier.debut = dateDebutJournee
-            }
-            if (dateFinJournee > journeeAModifier.fin) {
-                journeeAModifier.fin = dateFinJournee
-            }
-        }
-
-    }
-
-    public get laJourneeLaPlusProcheDeMaintenantDansLeFuture() {
-        let journeeLaPlusProcheDeMaintenant = this.journees[0]
-        this.journees.forEach(journee => {
-            if (Math.abs(journeeLaPlusProcheDeMaintenant.debut.diffNow().toMillis()) > Math.abs(journee.debut.diffNow().toMillis())) {
-                journeeLaPlusProcheDeMaintenant = journee
-            }
-        })
-
-        return journeeLaPlusProcheDeMaintenant
-    }
-}
-
-function logErreurs(details: Array<PromiseSettledResult<Awaited<Promise<EquipeRencontreJournee[]>>>>) {
+function logErreurs(details: Array<PromiseSettledResult<Awaited<Promise<JourneeDePoule[]>>>>) {
     details.filter(detail => detail.status === "rejected").forEach(console.error);
 }
