@@ -1,6 +1,6 @@
 "use client"
 import {useEffect, useState} from "react";
-import {JourneeDePoule, laJourneeLaPlusProcheDeMaintenantDansLeFuture} from "@/app/lib/matchs-weekend3";
+import {calculeDateJournee, JourneeDePoule, laDateEstDansLaMemeSemaineQuUneAutreDate} from "@/app/lib/matchs-weekend3";
 import {ChevronsLeft, ChevronsRight} from "lucide-react";
 import {ListeMatchs} from "@/app/ui/matchs/liste-matchs";
 import {DateTime} from "luxon";
@@ -22,8 +22,9 @@ export default function MatchsDesWeekendsClient({club, journeesDePouleInitiale}:
             })
     }, [club, decalage])
 
-    function calculeDate() {
-        let dateDebutWeekend = laJourneeLaPlusProcheDeMaintenantDansLeFuture(journeesDePoule, decalage);
+
+    function formateDate() {
+        let dateDebutWeekend = calculeDateJournee(journeesDePoule, decalage)
         let dateFinWeekEnd = dateDebutWeekend.plus({day: 1});
         if (dateDebutWeekend.year === dateFinWeekEnd.year) {
             if (dateDebutWeekend.month === dateFinWeekEnd.month) {
@@ -37,15 +38,32 @@ export default function MatchsDesWeekendsClient({club, journeesDePouleInitiale}:
         }
     }
 
+    function afficheWeekendPrecedent() {
+        if (isLoading) {
+            return false
+        } else {
+            return calculeDateJournee(journeesDePoule, (decalage - 1)).isValid
+        }
+    }
+
+    function afficheWeekendSuivant() {
+        if (isLoading) {
+            return false
+        } else {
+            return calculeDateJournee(journeesDePoule, (decalage + 1)).isValid
+        }
+    }
+
     function getMatchs() {
+        let dateJournee = calculeDateJournee(journeesDePoule, decalage);
         return journeesDePoule
             .filter(journeeDePoule => {
                 const date = DateTime.fromSQL(journeeDePoule.dateRencontre || "")
                 if (date.isValid) {
-                    return laDateEstDansLaMemeSemaineQuUneAutreDate(date, laJourneeLaPlusProcheDeMaintenantDansLeFuture(journeesDePoule, decalage))
+
+                    return laDateEstDansLaMemeSemaineQuUneAutreDate(date, dateJournee)
                 } else {
-                    let journeeDePouleInitiale = journeesDePouleInitiale.find(journeeDePouleInitiale => journeeDePouleInitiale.urlPoule === journeeDePoule.urlPoule)!!;
-                    return (journeeDePouleInitiale.numeroJournee + decalage) === journeeDePoule.numeroJournee
+                    return laDateEstDansLaMemeSemaineQuUneAutreDate(dateJournee, DateTime.fromISO(journeeDePoule.dateDebutJournee))
                 }
             })
             .filter(journeeDePoule => journeeDePoule.equipe1Libelle)
@@ -59,9 +77,6 @@ export default function MatchsDesWeekendsClient({club, journeesDePouleInitiale}:
             .sort((a, b) => a.dateRencontre.toMillis() - b.dateRencontre.toMillis())
     }
 
-    function laDateEstDansLaMemeSemaineQuUneAutreDate(date: DateTime, autreDate: DateTime): boolean {
-        return date.weekNumber === autreDate.weekNumber && date.year === autreDate.year;
-    }
 
     function decalleLeWeekEnd(decalageAMetreAJour: number) {
         setDecalage(decalageAMetreAJour)
@@ -72,9 +87,9 @@ export default function MatchsDesWeekendsClient({club, journeesDePouleInitiale}:
         <div className="flex">
 
             <div className="content-center mr-3 text-2xl">
-                {!isLoading &&
+                {afficheWeekendPrecedent() &&
                     <button type="button" onClick={() => decalleLeWeekEnd(decalage - 1)}
-                            className="text-white outline-none focus:outline-none rounded-full shadow-lg hover:bg-orange-700 active:bg-orange-700 bg-orange-500 ease-linear transition-all duration-150">
+                            className="text-white outline-none focus:outline-none rounded-full bg-orange-500 shadow-lg transform active:scale-75 transition-transform">
                         <ChevronsLeft className="h-12 w-12"/>
                     </button>
                 }
@@ -83,13 +98,13 @@ export default function MatchsDesWeekendsClient({club, journeesDePouleInitiale}:
 
                 <h1 className="font-bold text-gray-500 self-center">
 
-                    {calculeDate()}
+                    {formateDate()}
                 </h1>
             </div>
             <div className="content-center ml-3 text-2xl">
-                {!isLoading &&
+                {afficheWeekendSuivant() &&
                     <button onClick={() => decalleLeWeekEnd(decalage + 1)}
-                            className="text-white outline-none focus:outline-none rounded-full shadow-lg hover:bg-orange-700 active:bg-orange-700 bg-orange-500 ease-linear transition-all duration-150">
+                            className="text-white outline-none focus:outline-none rounded-full bg-orange-500 shadow-lg transform active:scale-75 transition-transform">
                         <ChevronsRight className="h-12 w-12"/>
                     </button>
                 }

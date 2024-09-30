@@ -15,8 +15,8 @@ export interface JourneeDePoule {
 }
 
 
-export function laJourneeLaPlusProcheDeMaintenantDansLeFuture(journeesDePoule: JourneeDePoule[], decalage: number) {
-    const maintenantAvecDecallage = DateTime.now().plus({week: decalage})
+export function laJourneeLaPlusProcheDeMaintenantDansLeFuture(journeesDePoule: JourneeDePoule[]) {
+    const maintenantAvecDecallage = DateTime.now()
 
     let journeeLaPlusProcheDeMaintenant: DateTime | undefined
     journeesDePoule.forEach(journeeDePoule => {
@@ -33,6 +33,35 @@ export function laJourneeLaPlusProcheDeMaintenantDansLeFuture(journeesDePoule: J
     })
     return journeeLaPlusProcheDeMaintenant!!
 }
+
+export function laDateEstDansLaMemeSemaineQuUneAutreDate(date: DateTime, autreDate: DateTime): boolean {
+    return date.weekNumber === autreDate.weekNumber && date.year === autreDate.year;
+}
+
+const DATE_INVALIDE = DateTime.fromISO("");
+
+export function calculeDateJournee(journeesDePoule: JourneeDePoule[], decalage: number) {
+    let dates: DateTime[] = []
+
+    journeesDePoule.forEach(journeeDePoule => {
+        let dateDebutJournee = DateTime.fromISO(journeeDePoule.dateDebutJournee);
+        let resultatTrouve = dates.find(resultat => laDateEstDansLaMemeSemaineQuUneAutreDate(resultat, dateDebutJournee))
+
+        if (!resultatTrouve) {
+            dates.push(dateDebutJournee)
+        }
+    })
+    dates.sort((a: DateTime, b: DateTime) => a.diff(b).toMillis());
+    let dateDeReference = laJourneeLaPlusProcheDeMaintenantDansLeFuture(journeesDePoule);
+    let indexDateDeReference = 0;
+    dates.forEach((date, index) => {
+        if (laDateEstDansLaMemeSemaineQuUneAutreDate(date, dateDeReference)) {
+            indexDateDeReference = index
+        }
+    })
+    return indexDateDeReference + decalage >= 0 && indexDateDeReference + decalage < dates.length ? dates[indexDateDeReference + decalage] : DATE_INVALIDE
+}
+
 
 class AjouteJourneesDePoule implements Resultats {
     public readonly journeesDePoule: JourneeDePoule[] = []
