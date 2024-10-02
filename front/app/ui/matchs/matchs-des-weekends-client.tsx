@@ -1,29 +1,29 @@
 "use client"
-import {useEffect, useState} from "react";
+import {useState} from "react";
 import {calculeDateJournee, JourneeDePoule, laDateEstDansLaMemeSemaineQuUneAutreDate, Match} from "@/app/lib/matchs-weekend3";
 import {ChevronsLeft, ChevronsRight} from "lucide-react";
 import {ListeMatchs} from "@/app/ui/matchs/liste-matchs";
 import {DateTime} from "luxon";
 import {FORMAT_COURT, FORMAT_COURT_SANS_ANNEES, LOCAL_FR} from "@/lib/configuration";
+import useSWR from "swr";
 
+const fetcher = (url: string) => fetch(url).then(res => res.json());
 
 export default function MatchsDesWeekendsClient({club, journeesDePouleInitiale}: { club: string, journeesDePouleInitiale: JourneeDePoule[] }) {
-    const [journeesDePoule, setJourneesDePoule] = useState(journeesDePouleInitiale)
     const [decalage, setDecalage] = useState(0)
-    const [isLoading, setLoading] = useState(true)
 
-    useEffect(() => {
-        fetch(`/api/matchs/${club}`)
-            .then((res) => res.json())
-            .then((data) => {
-                setJourneesDePoule(data)
-                setLoading(false)
-            })
-    }, [club, decalage])
+    const {data: journeesDePoule, isLoading} = useSWR<JourneeDePoule[]>(`/api/matchs/${club}`, fetcher, {
+        fallbackData: journeesDePouleInitiale,
+        revalidateOnFocus: false
+    });
+
+    function getJourneeDePoule() {
+        return journeesDePoule ? journeesDePoule : journeesDePouleInitiale
+    }
 
 
     function formateDate() {
-        let dateDebutWeekend = calculeDateJournee(journeesDePoule, decalage)
+        let dateDebutWeekend = calculeDateJournee(getJourneeDePoule(), decalage)
         let dateFinWeekEnd = dateDebutWeekend.plus({day: 1});
         if (dateDebutWeekend.year === dateFinWeekEnd.year) {
             if (dateDebutWeekend.month === dateFinWeekEnd.month) {
@@ -41,7 +41,7 @@ export default function MatchsDesWeekendsClient({club, journeesDePouleInitiale}:
         if (isLoading) {
             return false
         } else {
-            return calculeDateJournee(journeesDePoule, (decalage - 1)).isValid
+            return calculeDateJournee(getJourneeDePoule(), (decalage - 1)).isValid
         }
     }
 
@@ -49,13 +49,13 @@ export default function MatchsDesWeekendsClient({club, journeesDePouleInitiale}:
         if (isLoading) {
             return false
         } else {
-            return calculeDateJournee(journeesDePoule, (decalage + 1)).isValid
+            return calculeDateJournee(getJourneeDePoule(), (decalage + 1)).isValid
         }
     }
 
     function getMatchs() {
-        let dateJournee = calculeDateJournee(journeesDePoule, decalage);
-        return journeesDePoule
+        let dateJournee = calculeDateJournee(getJourneeDePoule(), decalage);
+        return getJourneeDePoule()
             .filter(journeeDePoule => {
                 const date = DateTime.fromSQL(journeeDePoule.dateRencontre || "")
                 if (date.isValid) {

@@ -3,6 +3,11 @@ import {JourneeFFHB, recupereLaCleCFK, recupereLesRecontres} from "@/app/lib/api
 import {rechercheCoteServeurLesJourneesDePoules, JourneeDePoule} from "@/app/lib/matchs-weekend3";
 
 
+
+export const revalidate = 28800;
+export const dynamic = 'force-static'
+
+
 export async function GET(_: NextRequest, {params}: { params: { club: string } }) {
     let journeesDePoule = rechercheCoteServeurLesJourneesDePoules(params.club);
 

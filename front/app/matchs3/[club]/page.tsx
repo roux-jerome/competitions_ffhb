@@ -1,19 +1,27 @@
 import {Entete} from "@/app/ui/entete/entete";
 import Link from "next/link";
-import {Suspense} from "react";
 import ListeClub from "@/app/ui/clubs/liste-club";
 import MatchsDesWeekEndsServeur from "@/app/ui/matchs/matchs-des-weends-serveur";
-import {Chargement} from "@/app/ui/Chargement";
 
-export async function generateMetadata({params, searchParams}: { params: { club: string }, searchParams?: { date?: string; }; }) {
-    const date = searchParams?.date ? ` - ${searchParams.date}` : '';
-
+export async function generateMetadata({params}: { params: { club: string } }) {
     return {
-        title: `Recherche FFHB - matchs ${decodeURIComponent(params.club)}${date}`,
+        title: `Recherche FFHB - matchs ${decodeURIComponent(params.club)}`,
         description: `Accéde aux matchs du week-end de ${decodeURIComponent(params.club)} à partir des informations du site de la Fédération Française de handball.`
     };
 }
 
+
+export const revalidate = 28800
+
+export const dynamicParams = true
+
+export function generateStaticParams(){
+    return ["HBC IZONNAIS", "CANEJAN"].map(club => ({
+        params: {
+            club: encodeURIComponent(club)
+        }
+    }))
+}
 
 export default async function Matchs3({params}: { params: { club: string }; }) {
     const club = decodeURIComponent(params.club)
@@ -33,13 +41,8 @@ export default async function Matchs3({params}: { params: { club: string }; }) {
 
             </div>
             <div className="container px-6 py-2 mx-auto flex flex-col items-center">
-
-                <Suspense key={club + "clubs"} fallback={<Chargement/>}>
-                    <ListeClub recherche={club} afficheSousFormeDeLien={false}/>
-                </Suspense>
-                <Suspense key={club + "matchs"} fallback={<Chargement/>}>
-                    <MatchsDesWeekEndsServeur club={club}/>
-                </Suspense>
+                <ListeClub recherche={club} afficheSousFormeDeLien={false}/>
+                <MatchsDesWeekEndsServeur club={club}/>
             </div>
         </section>
     </>

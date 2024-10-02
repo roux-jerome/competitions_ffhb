@@ -1,24 +1,28 @@
-import axios from "axios";
 import {id_saison} from "@/lib/configuration";
 import * as cheerio from "cheerio";
 
 export async function recupereLaCleCFK() {
-    const $ = await cheerio.fromURL('https://www.ffhandball.fr/');
+    let response = await fetch('https://www.ffhandball.fr/', {
+        method: 'GET',
+        next: {revalidate: 28800}
+    });
+    let contenu = await response.text();
+    const $ = cheerio.load(contenu);
     return $('body').attr('data-cfk')!!;
 }
 
 export async function recupereLesRecontres(typeCompetition: string, idCompetition: string, extEquipeId: string, cfkKey: string): Promise<ResultatFFHB> {
-    const {data} = await axios.request({
-        url: 'https://www.ffhandball.fr/wp-json/competitions/v1/computeBlockAttributes',
+    let urlSearchParams = new URLSearchParams();
+    urlSearchParams.append("block", 'competitions---rencontre-list')
+    urlSearchParams.append("ext_saison_id", id_saison)
+    urlSearchParams.append("url_competition_type", typeCompetition)
+    urlSearchParams.append("url_competition", idCompetition)
+    urlSearchParams.append("ext_equipe_id", extEquipeId)
+    const response = await fetch(`https://www.ffhandball.fr/wp-json/competitions/v1/computeBlockAttributes?${urlSearchParams.toString()}`, {
         method: 'GET',
-        params: {
-            block: 'competitions---rencontre-list',
-            ext_saison_id: id_saison,
-            url_competition_type: typeCompetition,
-            url_competition: idCompetition,
-            ext_equipe_id: extEquipeId
-        },
+        next: {revalidate: 28800}
     })
+    let data = await response.text();
     const str = Buffer.from(data, 'base64').toString()
     let result = ''
     const keyLen = cfkKey.length
@@ -33,6 +37,7 @@ interface ResultatFFHB {
     rencontres: RecontreFFHB[]
     poule: { journees: string }
 }
+
 export interface JourneeFFHB {
     "journee_numero": number,
     "date_debut": string,
