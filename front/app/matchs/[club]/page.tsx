@@ -16,7 +16,7 @@ export const revalidate = 28800
 export const dynamicParams = true
 
 export function generateStaticParams(){
-    return ["HBC IZONNAIS", "CANEJAN HBC","AS AMBARESIENNE"].map(club => ({
+    return ["HBC IZONNAIS", "CANEJAN HBC","AS AMBARESIENNE","ST LOUBES HB"].map(club => ({
         params: {
             club: encodeURIComponent(club)
         }
