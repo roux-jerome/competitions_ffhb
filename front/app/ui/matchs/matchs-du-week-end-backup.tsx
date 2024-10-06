@@ -1,8 +1,8 @@
-import {rechercheMatchsDuWeekend} from "@/app/lib/matchs-weekend";
-import {ListeMatchs} from "@/app/ui/matchs/liste-matchs";
+import {rechercheMatchsDuWeekendBackup} from "@/app/lib/matchs-weekend-backup";
+import {ListeMatchsBackup} from "@/app/ui/matchs/liste-matchs-backup";
 
-export async function MatchsDuWeekEnd({club}: { club: string }) {
-    const resultatRecherche = await rechercheMatchsDuWeekend(club)
+export async function MatchsDuWeekEndBackup({club}: { club: string }) {
+    const resultatRecherche = await rechercheMatchsDuWeekendBackup(club)
 
 
     return <>
@@ -26,7 +26,7 @@ export async function MatchsDuWeekEnd({club}: { club: string }) {
                     <span className="inline-block w-3 h-1 ml-1 bg-orange-500 rounded-full"></span>
                     <span className="inline-block w-1 h-1 ml-1 bg-orange-500 rounded-full"></span>
                 </div>
-                <ListeMatchs matchs={resultatRecherche.matchs.domicile}/>
+                <ListeMatchsBackup matchs={resultatRecherche.matchs.domicile}/>
             </div>
             <div className="container flex flex-col justify-start">
                 <div className="flex items-center mt-6">
@@ -44,7 +44,7 @@ export async function MatchsDuWeekEnd({club}: { club: string }) {
                     <span className="inline-block w-3 h-1 ml-1 bg-orange-500 rounded-full"></span>
                     <span className="inline-block w-1 h-1 ml-1 bg-orange-500 rounded-full"></span>
                 </div>
-                <ListeMatchs matchs={resultatRecherche.matchs.exterieur}/>
+                <ListeMatchsBackup matchs={resultatRecherche.matchs.exterieur}/>
             </div>
         </div>
     </>;

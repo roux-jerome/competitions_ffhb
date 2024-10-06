@@ -1,11 +1,11 @@
 "use client"
 import {useState} from "react";
-import {calculeDateJournee, JourneeDePoule, laDateEstDansLaMemeSemaineQuUneAutreDate, Match} from "@/app/lib/matchs-weekend3";
+import {calculeDateJournee, JourneeDePoule, laDateEstDansLaMemeSemaineQuUneAutreDate, Match} from "@/app/lib/matchs-weekend";
 import {ChevronsLeft, ChevronsRight} from "lucide-react";
 import {DateTime} from "luxon";
 import {FORMAT_COURT, FORMAT_COURT_SANS_ANNEES, LOCAL_FR} from "@/lib/configuration";
 import useSWR from "swr";
-import {ListeMatchs2} from "@/app/ui/matchs/liste-matchs2";
+import {ListeMatchs} from "@/app/ui/matchs/liste-matchs";
 
 const fetcher = (url: string) => fetch(url).then(res => res.json());
 
@@ -29,11 +29,11 @@ export default function MatchsDesWeekendsClient({club, journeesDePouleInitiale}:
             if (dateDebutWeekend.month === dateFinWeekEnd.month) {
                 return <><p>du {dateDebutWeekend.day} au {dateFinWeekEnd.toFormat(FORMAT_COURT, LOCAL_FR)}</p></>
             } else {
-                return <><p>du {dateDebutWeekend.toFormat(FORMAT_COURT_SANS_ANNEES, LOCAL_FR)}</p><p> au {dateFinWeekEnd.toFormat(FORMAT_COURT, LOCAL_FR)}</p></>
+                return <><p>du {dateDebutWeekend.toFormat(FORMAT_COURT_SANS_ANNEES, LOCAL_FR)} au {dateFinWeekEnd.toFormat(FORMAT_COURT, LOCAL_FR)}</p></>
             }
 
         } else {
-            return <><p>du {dateDebutWeekend.toFormat(FORMAT_COURT, LOCAL_FR)}</p><p> au {dateFinWeekEnd.toFormat(FORMAT_COURT, LOCAL_FR)}</p></>
+            return <><p>du {dateDebutWeekend.toFormat(FORMAT_COURT, LOCAL_FR)} au {dateFinWeekEnd.toFormat(FORMAT_COURT, LOCAL_FR)}</p></>
         }
     }
 
@@ -87,28 +87,35 @@ export default function MatchsDesWeekendsClient({club, journeesDePouleInitiale}:
     }
 
     return <>
-        <h1 className="font-bold pt-10 text-2xl">Matchs</h1>
-        <div className="flex">
 
-            <div className="content-center mr-3 text-2xl">
-                {afficheWeekendPrecedent() &&
-                    <button type="button" onClick={() => decalleLeWeekEnd(decalage - 1)}
-                            className="text-white outline-none focus:outline-none rounded-full bg-orange-500 shadow-lg transform active:scale-75 transition-transform">
+        <div className="pt-5 flex w-full justify-between">
+
+            <div className="place-self-center">
+                {afficheWeekendPrecedent()
+                    ? <button type="button" onClick={() => decalleLeWeekEnd(decalage - 1)}
+                              className="text-white outline-none focus:outline-none rounded-full bg-orange-500 shadow-lg transform active:scale-75 transition-transform">
+                        <ChevronsLeft className="h-12 w-12"/>
+                    </button>
+                    : <button type="button"
+                              className="text-white rounded-full bg-gray-400 shadow-lg">
                         <ChevronsLeft className="h-12 w-12"/>
                     </button>
                 }
             </div>
-            <div className="text-center flex text-xl md:text-2xl">
-
-                <h1 className="font-bold text-gray-500 self-center">
-
+            <div className="text-center flex flex-col text-xl font-bold">
+                <h1>Matchs</h1>
+                <h1>
                     {formateDate()}
                 </h1>
             </div>
-            <div className="content-center ml-3 text-2xl">
-                {afficheWeekendSuivant() &&
-                    <button onClick={() => decalleLeWeekEnd(decalage + 1)}
-                            className="text-white outline-none focus:outline-none rounded-full bg-orange-500 shadow-lg transform active:scale-75 transition-transform">
+            <div className="place-self-center">
+                {afficheWeekendSuivant()
+                    ? <button onClick={() => decalleLeWeekEnd(decalage + 1)}
+                              className="text-white outline-none focus:outline-none rounded-full bg-orange-500 shadow-lg transform active:scale-75 transition-transform">
+                        <ChevronsRight className="h-12 w-12"/>
+                    </button>
+                    : <button type="button"
+                              className="text-white rounded-full bg-gray-400 shadow-lg">
                         <ChevronsRight className="h-12 w-12"/>
                     </button>
                 }
@@ -130,7 +137,7 @@ export default function MatchsDesWeekendsClient({club, journeesDePouleInitiale}:
                     <span className="inline-block w-3 h-1 ml-1 bg-orange-500 rounded-full"></span>
                     <span className="inline-block w-1 h-1 ml-1 bg-orange-500 rounded-full"></span>
                 </div>
-                <ListeMatchs2 matchs={getMatchs().filter(match => match.estADomicile)}/>
+                <ListeMatchs matchs={getMatchs().filter(match => match.estADomicile)}/>
             </div>
             <div className="container flex flex-col justify-start">
                 <div className="flex items-center mt-6">
@@ -148,7 +155,7 @@ export default function MatchsDesWeekendsClient({club, journeesDePouleInitiale}:
                     <span className="inline-block w-3 h-1 ml-1 bg-orange-500 rounded-full"></span>
                     <span className="inline-block w-1 h-1 ml-1 bg-orange-500 rounded-full"></span>
                 </div>
-                <ListeMatchs2 matchs={getMatchs().filter(match => !match.estADomicile)}/>
+                <ListeMatchs matchs={getMatchs().filter(match => !match.estADomicile)}/>
             </div>
         </div>
     </>;

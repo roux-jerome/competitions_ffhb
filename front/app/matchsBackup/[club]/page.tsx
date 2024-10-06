@@ -1,29 +1,20 @@
 import {Entete} from "@/app/ui/entete/entete";
-import Link from "next/link";
 import ListeClub from "@/app/ui/clubs/liste-club";
-import MatchsDesWeekEndsServeur from "@/app/ui/matchs/matchs-des-weends-serveur";
+import {Suspense} from "react";
+import {MatchsDuWeekEndBackup} from "@/app/ui/matchs/matchs-du-week-end-backup";
+import Link from "next/link";
 
-export async function generateMetadata({params}: { params: { club: string } }) {
+export async function generateMetadata({params, searchParams}: { params: { club: string }, searchParams?: { date?: string; }; }) {
+    const date = searchParams?.date ? ` - ${searchParams.date}` : '';
+
     return {
-        title: `Recherche FFHB - matchs ${decodeURIComponent(params.club)}`,
+        title: `Recherche FFHB - matchs ${decodeURIComponent(params.club)}${date}`,
         description: `Accéde aux matchs du week-end de ${decodeURIComponent(params.club)} à partir des informations du site de la Fédération Française de handball.`
     };
 }
 
 
-export const revalidate = 28800
-
-export const dynamicParams = true
-
-export function generateStaticParams(){
-    return ["HBC IZONNAIS", "CANEJAN HBC","AS AMBARESIENNE"].map(club => ({
-        params: {
-            club: encodeURIComponent(club)
-        }
-    }))
-}
-
-export default async function Matchs3({params}: { params: { club: string }; }) {
+export default async function Matchs({params}: { params: { club: string }; }) {
     const club = decodeURIComponent(params.club)
 
     return <>
@@ -40,9 +31,15 @@ export default async function Matchs3({params}: { params: { club: string }; }) {
                 </Link>
 
             </div>
-            <div className="container px-2 py-2 mx-auto flex flex-col items-center">
-                <ListeClub recherche={club} afficheSousFormeDeLien={false}/>
-                <MatchsDesWeekEndsServeur club={club}/>
+            <div className="container px-6 py-2 mx-auto flex flex-col items-center">
+
+                <Suspense key={club + "clubs"} fallback={<div>loading...</div>}>
+                    <ListeClub recherche={club} afficheSousFormeDeLien={false}/>
+                </Suspense>
+                <h1 className="font-bold text-2xl">Matchs du week-end </h1>
+                <Suspense key={club + "match"} fallback={<div>loading...</div>}>
+                    <MatchsDuWeekEndBackup club={club}/>
+                </Suspense>
             </div>
         </section>
     </>

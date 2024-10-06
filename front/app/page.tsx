@@ -30,7 +30,7 @@ export default async function Home({searchParams,}: { searchParams?: { recherche
                         <p className="text-s text-gray-500 mt-5 font-medium ">
                             Choisis ton club pour accéder aux matchs du week-end.<br/>
                         </p>
-                        <div className="py-7 relative text-center">
+                        <div className="relative text-center">
                             <Suspense key={recherche + "clubs"} fallback={<div>loading...</div>}>
                                 <ListeClub recherche={recherche}/>
                             </Suspense>

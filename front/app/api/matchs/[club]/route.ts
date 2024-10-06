@@ -1,6 +1,6 @@
 import {NextRequest} from "next/server";
 import {JourneeFFHB, recupereLaCleCFK, recupereLesRecontres} from "@/app/lib/api-ffhb";
-import {JourneeDePoule, rechercheCoteServeurLesJourneesDePoules} from "@/app/lib/matchs-weekend3";
+import {JourneeDePoule, rechercheCoteServeurLesJourneesDePoules} from "@/app/lib/matchs-weekend";
 
 
 export const revalidate = 28800;
