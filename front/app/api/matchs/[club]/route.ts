@@ -20,7 +20,6 @@ export async function GET(_: NextRequest, {params}: { params: { club: string } }
             return recupereLesRecontres(typeCompetition, idCompetition, journeeDePoule.extEquipeId, cleCFK)
                 .then(resultat => {
                     const journeesFFHB: JourneeFFHB[] = JSON.parse(resultat.poule.journees)
-                    console.log(JSON.stringify(resultat))
                     return resultat.rencontres
                         .filter(rencontre => rencontre?.equipe1Libelle?.toLocaleLowerCase() === journeeDePoule.nomEquipe || rencontre?.equipe2Libelle?.toLocaleLowerCase() === journeeDePoule.nomEquipe)
                         .map(rencontre => {
@@ -34,7 +33,12 @@ export async function GET(_: NextRequest, {params}: { params: { club: string } }
                                 extEquipeId: journeeDePoule.extEquipeId,
                                 dateRencontre: rencontre.date,
                                 equipe1Libelle: rencontre.equipe1Libelle,
-                                equipe2Libelle: rencontre.equipe2Libelle
+                                equipe2Libelle: rencontre.equipe2Libelle,
+                                structure1Logo: rencontre.structure1Logo,
+                                structure2Logo: rencontre.structure2Logo,
+                                equipe1Score: rencontre.equipe1Score,
+                                equipe2Score: rencontre.equipe2Score,
+
                             } as JourneeDePoule
                         })
                 })

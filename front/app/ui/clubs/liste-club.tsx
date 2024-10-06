@@ -1,21 +1,11 @@
 import Link from "next/link";
 import {rechercheClubs} from "@/app/lib/clubs";
-import {url_site_ffhb} from "@/lib/configuration";
+import {formatUrlLogo} from "@/app/lib/logo";
 
 export default async function ListeClub({recherche, afficheSousFormeDeLien = true}: { recherche: string, afficheSousFormeDeLien?: boolean }) {
     const resultatRecherche = rechercheClubs(recherche)
 
-    function formatUrlLogo(logo: string) {
-        if (logo && logo != "") {
-            return "https://media-logos-clubs.ffhandball.fr/256/"
-                + logo.toLowerCase()
-                    .replace(".gif", ".webp")
-                    .replace(".jpg", ".webp")
-                    .replace(".jpeg", ".webp")
-                    .replace(".png", ".webp")
-        }
-        return `${url_site_ffhb}/app/themes/ffhandball/img/logo_generic_club.png`
-    }
+
 
 
     return <div className="container mx-auto">

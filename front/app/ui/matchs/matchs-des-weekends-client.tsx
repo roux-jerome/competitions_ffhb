@@ -2,10 +2,10 @@
 import {useState} from "react";
 import {calculeDateJournee, JourneeDePoule, laDateEstDansLaMemeSemaineQuUneAutreDate, Match} from "@/app/lib/matchs-weekend3";
 import {ChevronsLeft, ChevronsRight} from "lucide-react";
-import {ListeMatchs} from "@/app/ui/matchs/liste-matchs";
 import {DateTime} from "luxon";
 import {FORMAT_COURT, FORMAT_COURT_SANS_ANNEES, LOCAL_FR} from "@/lib/configuration";
 import useSWR from "swr";
+import {ListeMatchs2} from "@/app/ui/matchs/liste-matchs2";
 
 const fetcher = (url: string) => fetch(url).then(res => res.json());
 
@@ -70,7 +70,12 @@ export default function MatchsDesWeekendsClient({club, journeesDePouleInitiale}:
                 new Match(journeeDePoule.libellePoule, journeeDePoule.urlPoule, journeeDePoule.nomEquipe, {
                     date: journeeDePoule.dateRencontre || "",
                     equipe1Libelle: journeeDePoule.equipe1Libelle!!,
-                    equipe2Libelle: journeeDePoule.equipe2Libelle!!
+                    equipe2Libelle: journeeDePoule.equipe2Libelle!!,
+                    structure1Logo: journeeDePoule.structure1Logo!!,
+                    structure2Logo: journeeDePoule.structure2Logo!!,
+                    equipe1Score: journeeDePoule.equipe1Score!!,
+                    equipe2Score: journeeDePoule.equipe2Score!!,
+
                 }, journeeDePoule.numeroJournee)
             )
             .sort((a, b) => a.dateRencontre.toMillis() - b.dateRencontre.toMillis())
@@ -125,7 +130,7 @@ export default function MatchsDesWeekendsClient({club, journeesDePouleInitiale}:
                     <span className="inline-block w-3 h-1 ml-1 bg-orange-500 rounded-full"></span>
                     <span className="inline-block w-1 h-1 ml-1 bg-orange-500 rounded-full"></span>
                 </div>
-                <ListeMatchs matchs={getMatchs().filter(match => match.estADomicile)}/>
+                <ListeMatchs2 matchs={getMatchs().filter(match => match.estADomicile)}/>
             </div>
             <div className="container flex flex-col justify-start">
                 <div className="flex items-center mt-6">
@@ -143,7 +148,7 @@ export default function MatchsDesWeekendsClient({club, journeesDePouleInitiale}:
                     <span className="inline-block w-3 h-1 ml-1 bg-orange-500 rounded-full"></span>
                     <span className="inline-block w-1 h-1 ml-1 bg-orange-500 rounded-full"></span>
                 </div>
-                <ListeMatchs matchs={getMatchs().filter(match => !match.estADomicile)}/>
+                <ListeMatchs2 matchs={getMatchs().filter(match => !match.estADomicile)}/>
             </div>
         </div>
     </>;

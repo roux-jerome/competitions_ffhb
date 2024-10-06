@@ -3,6 +3,7 @@ import {AnciennesPoules} from "@/app/ui/competitions/anciennes-poules";
 
 import {rechercheCompetitions} from "@/app/lib/competitions";
 import {url_competitions} from "@/lib/configuration";
+import {Tags} from "@/app/ui/tags";
 
 export default async function CartesCompetitions({recherche}: { recherche: string }) {
     const resultatRecherche = rechercheCompetitions(recherche)
@@ -64,17 +65,7 @@ export default async function CartesCompetitions({recherche}: { recherche: strin
                             <div className="flex flex-col">
                                 <AnciennesPoules anciennesPoules={competition.anciennesPoules}/>
                             </div>
-                            <div className="flex justify-end pt-5 text-xs font-light text-gray-500">
-                                {
-                                    competition.tags.map(tag =>
-                                        <a key={tag}
-                                           className="ml-3 inline-flex items-center px-2.5 py-0.5 focus:outline-none focus:ring-2 focus:ring-orange-200  focus:ring-ring focus:ring-offset-2 hover:cursor-default"
-                                           tabIndex={0} role="button">{tag}</a>
-                                    )
-                                }
-                            </div>
-
-
+                            <Tags tags={competition.tags}/>
                         </div>
                 )}
 

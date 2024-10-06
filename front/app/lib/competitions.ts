@@ -1,5 +1,6 @@
 import {Poule} from "@/app/lib/poule";
 import {recherche, Resultats} from "@/app/lib/recherche";
+import {construitLesTagsDepuisLUrl} from "@/app/lib/tags";
 
 export class Competition {
 
@@ -41,42 +42,7 @@ export class Competition {
 
 
     construitLesTags = (poule: Poule) => {
-        let details = poule.url.split("/");
-
-        let chaineContenantDesTags = details[1];
-        let formatageTexte = chaineContenantDesTags.split("-");
-        formatageTexte.pop()
-        this.tags.push(details[0].replaceAll("-", " "));
-
-        ["masculin", "masculine", "masculins", "feminin", "feminine", "feminines", "u18", "u15", "u13", "u11"].forEach((tagAChercher: string) => {
-            if (formatageTexte.includes(tagAChercher)) {
-                this.tags.push(tagAChercher)
-            }
-        })
-
-        if (formatageTexte.includes("u11m") || formatageTexte.includes("u13m") || formatageTexte.includes("u15m")) {
-            this.tags.push("masculin")
-        }
-
-        if (formatageTexte.includes("u11f") || formatageTexte.includes("u13f") || formatageTexte.includes("u15f")) {
-            this.tags.push("feminin")
-        }
-
-        if (formatageTexte.includes("u11m") || formatageTexte.includes("u11f") ) {
-            this.tags.push("u11")
-        }
-
-        if (formatageTexte.includes("u13m") || formatageTexte.includes("u13f")) {
-            this.tags.push("u13")
-        }
-
-        if (formatageTexte.includes("u15m") || formatageTexte.includes("u15f")) {
-            this.tags.push("u15")
-        }
-
-        if (formatageTexte.includes("16")) {
-            this.tags.push("senior")
-        }
+        this.tags = construitLesTagsDepuisLUrl(poule.url)
     }
 }
 

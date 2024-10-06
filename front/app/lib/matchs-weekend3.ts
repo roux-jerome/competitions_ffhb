@@ -1,6 +1,7 @@
 import {DateTime} from "luxon";
 import {recherche, Resultats} from "@/app/lib/recherche";
 import {Poule, Rencontre} from "@/app/lib/poule";
+import {construitLesTagsDepuisLUrl} from "@/app/lib/tags";
 
 export interface JourneeDePoule {
     urlPoule: string,
@@ -9,8 +10,12 @@ export interface JourneeDePoule {
     numeroJournee: number;
     nomEquipe: string;
     extEquipeId: string,
-    equipe2Libelle?: string;
     equipe1Libelle?: string;
+    equipe2Libelle?: string;
+    structure1Logo?: string;
+    structure2Logo?: string;
+    equipe1Score?: string,
+    equipe2Score?: string,
     dateRencontre?: string,
 }
 
@@ -67,7 +72,7 @@ class AjouteJourneesDePoule implements Resultats {
     public readonly journeesDePoule: JourneeDePoule[] = []
 
     ajoute(nomEquipe: string, poule: Poule) {
-        const recontre = poule.rencontres?.find(rencontre => rencontre.equipe1Libelle.toLocaleLowerCase() === nomEquipe || rencontre.equipe2Libelle.toLocaleLowerCase() === nomEquipe)
+        const rencontre = poule.rencontres?.find(rencontre => rencontre.equipe1Libelle.toLocaleLowerCase() === nomEquipe || rencontre.equipe2Libelle.toLocaleLowerCase() === nomEquipe)
         const equipe = poule.equipes?.find(equipe => equipe.libelle.toLocaleLowerCase() === nomEquipe)
         if (equipe) {
             this.journeesDePoule.push(
@@ -78,9 +83,13 @@ class AjouteJourneesDePoule implements Resultats {
                     nomEquipe: nomEquipe,
                     extEquipeId: equipe.id,
                     libellePoule: poule.libelleCompetition,
-                    equipe1Libelle: recontre?.equipe1Libelle,
-                    equipe2Libelle: recontre?.equipe2Libelle,
-                    dateRencontre: recontre?.date
+                    equipe1Libelle: rencontre?.equipe1Libelle,
+                    equipe2Libelle: rencontre?.equipe2Libelle,
+                    structure1Logo: rencontre?.structure1Logo,
+                    structure2Logo: rencontre?.structure2Logo,
+                    equipe1Score: rencontre?.equipe1Score,
+                    equipe2Score: rencontre?.equipe2Score,
+                    dateRencontre: rencontre?.date
                 }
             )
         }
@@ -95,21 +104,22 @@ export function rechercheCoteServeurLesJourneesDePoules(club: string) {
 
 export class Match {
 
-    constructor(public readonly libelle: string, public readonly url: string, public readonly nomEquipe: string, public readonly rencontre: Rencontre, public readonly numeroJournee = 0) {
+    constructor(
+        public readonly libelle: string, public readonly url: string, public readonly nomEquipe: string, public readonly rencontre: Rencontre, public readonly numeroJournee = 0) {
 
     }
 
     public get categorie() {
         if (this.libelle.toLowerCase().indexOf("u11") >= 0 || this.libelle.toLowerCase().startsWith("-11 ")) {
-            return "-11 "
+            return "-11"
         } else if (this.libelle.toLowerCase().indexOf("u13") >= 0) {
-            return "-13 "
+            return "-13"
         } else if (this.libelle.toLowerCase().indexOf("u15") >= 0) {
-            return "-15 "
+            return "-15"
         } else if (this.libelle.toLowerCase().indexOf("u18") >= 0 || this.libelle.toLowerCase().indexOf("u17") >= 0) {
-            return "-18 "
+            return "-18"
         } else if (this.libelle.toLowerCase().indexOf("plateau") >= 0 || this.libelle.toLowerCase().indexOf("minihand") >= 0) {
-            return "mini "
+            return "mini"
         } else {
             return "S"
         }
@@ -148,6 +158,10 @@ export class Match {
 
     public get estADomicile() {
         return this.rencontre.equipe1Libelle.toLowerCase() === this.nomEquipe
+    }
+
+    public get tags() {
+        return construitLesTagsDepuisLUrl(this.url)
     }
 
 

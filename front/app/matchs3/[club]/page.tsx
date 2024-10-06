@@ -40,7 +40,7 @@ export default async function Matchs3({params}: { params: { club: string }; }) {
                 </Link>
 
             </div>
-            <div className="container px-6 py-2 mx-auto flex flex-col items-center">
+            <div className="container px-2 py-2 mx-auto flex flex-col items-center">
                 <ListeClub recherche={club} afficheSousFormeDeLien={false}/>
                 <MatchsDesWeekEndsServeur club={club}/>
             </div>
