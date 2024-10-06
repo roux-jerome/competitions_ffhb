@@ -8,7 +8,7 @@ export const dynamic = 'force-static'
 
 
 export async function GET(_: NextRequest, {params}: { params: { club: string } }) {
-    let journeesDePoule = rechercheCoteServeurLesJourneesDePoules(params.club).filter(poule => poule.urlPoule.indexOf("u11") > 0);
+    let journeesDePoule = rechercheCoteServeurLesJourneesDePoules(params.club);
 
 
     let cleCFK = await recupereLaCleCFK();
