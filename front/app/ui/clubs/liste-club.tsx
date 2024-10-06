@@ -29,7 +29,7 @@ export default async function ListeClub({recherche, afficheSousFormeDeLien = tru
                             ?
                             <Link
                                 className="mt-2 font-semibold text-xl md:text-2xl hover:underline hover:text-orange-600"
-                                href={`/matchs/${encodeURIComponent(club.libelle)}`}>
+                                href={`/matchs3/${encodeURIComponent(club.libelle)}`}>
                                 <img src={formatUrlLogo(club.logo)} alt={"logo " + club.libelle}
                                      className="mx-auto rounded-full shadow-[10px_10px_0] shadow-orange-100 mb-10"
                                      width="256px" height="256px"/>
@@ -48,7 +48,7 @@ export default async function ListeClub({recherche, afficheSousFormeDeLien = tru
             )}
             {afficheSousFormeDeLien && resultatRecherche.clubs.length > 1 ? <div className="w-1/2 md:w-1/4 lg:w-1/6 flex flex-col justify-between px-2">
                 <Link className="mt-2 flex flex-col items-center text-center font-semibold text-xl md:text-2xl hover:underline hover:text-orange-600"
-                      href={`/matchs/${encodeURIComponent(recherche)}`}>
+                      href={`/matchs3/${encodeURIComponent(recherche)}`}>
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1" stroke="currentColor"
                          className="mx-auto rounded-full shadow-[10px_10px_0] shadow-orange-100 mb-10 text-orange-600 p-12">
                         <path strokeLinecap="round" strokeLinejoin="round"
