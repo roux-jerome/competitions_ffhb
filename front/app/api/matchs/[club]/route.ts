@@ -1,7 +1,6 @@
 import {NextRequest} from "next/server";
 import {JourneeFFHB, recupereLaCleCFK, recupereLesRecontres} from "@/app/lib/api-ffhb";
-import {rechercheCoteServeurLesJourneesDePoules, JourneeDePoule} from "@/app/lib/matchs-weekend3";
-
+import {JourneeDePoule, rechercheCoteServeurLesJourneesDePoules} from "@/app/lib/matchs-weekend3";
 
 
 export const revalidate = 28800;
@@ -9,7 +8,7 @@ export const dynamic = 'force-static'
 
 
 export async function GET(_: NextRequest, {params}: { params: { club: string } }) {
-    let journeesDePoule = rechercheCoteServeurLesJourneesDePoules(params.club);
+    let journeesDePoule = rechercheCoteServeurLesJourneesDePoules(params.club).filter(poule => poule.urlPoule.indexOf("u11") > 0);
 
 
     let cleCFK = await recupereLaCleCFK();
@@ -21,21 +20,23 @@ export async function GET(_: NextRequest, {params}: { params: { club: string } }
             return recupereLesRecontres(typeCompetition, idCompetition, journeeDePoule.extEquipeId, cleCFK)
                 .then(resultat => {
                     const journeesFFHB: JourneeFFHB[] = JSON.parse(resultat.poule.journees)
-
-                    return resultat.rencontres.map(rencontre => {
-                        let journee = journeesFFHB.find(journeesRecontre => journeesRecontre.journee_numero === Number(rencontre.journeeNumero))!!;
-                        return {
-                            urlPoule: journeeDePoule.urlPoule,
-                            libellePoule: journeeDePoule.libellePoule,
-                            numeroJournee: journee.journee_numero,
-                            dateDebutJournee: journee.date_debut,
-                            nomEquipe: journeeDePoule.nomEquipe,
-                            extEquipeId: journeeDePoule.extEquipeId,
-                            dateRencontre: rencontre.date,
-                            equipe1Libelle: rencontre.equipe1Libelle,
-                            equipe2Libelle: rencontre.equipe2Libelle
-                        } as JourneeDePoule
-                    })
+                    console.log(JSON.stringify(resultat))
+                    return resultat.rencontres
+                        .filter(rencontre => rencontre?.equipe1Libelle?.toLocaleLowerCase() === journeeDePoule.nomEquipe || rencontre?.equipe2Libelle?.toLocaleLowerCase() === journeeDePoule.nomEquipe)
+                        .map(rencontre => {
+                            let journee = journeesFFHB.find(journeesRecontre => journeesRecontre.journee_numero === Number(rencontre.journeeNumero))!!;
+                            return {
+                                urlPoule: journeeDePoule.urlPoule,
+                                libellePoule: journeeDePoule.libellePoule,
+                                numeroJournee: journee.journee_numero,
+                                dateDebutJournee: journee.date_debut,
+                                nomEquipe: journeeDePoule.nomEquipe,
+                                extEquipeId: journeeDePoule.extEquipeId,
+                                dateRencontre: rencontre.date,
+                                equipe1Libelle: rencontre.equipe1Libelle,
+                                equipe2Libelle: rencontre.equipe2Libelle
+                            } as JourneeDePoule
+                        })
                 })
         }))
     logErreurs(details);
