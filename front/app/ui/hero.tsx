@@ -1,6 +1,6 @@
 "use client"
 import {motion} from "framer-motion";
-import {HeroHighlight, Highlight} from "@/app/ui/hero-highlight";
+import {HeroHighlight, Highlight} from "@/components/ui/hero-highlight";
 import Image from "next/image";
 import imageHand from "@/app/ui/hand.png";
 import {usePathname, useRouter, useSearchParams} from "next/navigation";

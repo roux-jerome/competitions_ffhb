@@ -3,7 +3,7 @@ import {AnciennesPoules} from "@/app/ui/competitions/anciennes-poules";
 
 import {rechercheCompetitions} from "@/app/lib/competitions";
 import {url_competitions} from "@/lib/configuration";
-import {Tags} from "@/app/ui/tags";
+import {Tags} from "@/components/ui/tags";
 
 export default async function CartesCompetitions({recherche}: { recherche: string }) {
     const resultatRecherche = rechercheCompetitions(recherche)

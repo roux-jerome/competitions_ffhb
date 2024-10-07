@@ -1,6 +1,6 @@
 import {url_competitions} from "@/lib/configuration";
 import {Match} from "@/app/lib/matchs-weekend";
-import {Tags} from "@/app/ui/tags";
+import {Tags} from "@/components/ui/tags";
 
 export function ListeMatchs({matchs}: { matchs: Match[] }) {
     return matchs.map(match => <div key={`${match.url}-${match.rencontre.equipe1Libelle}-${match.rencontre.equipe2Libelle}`}>
