@@ -20,7 +20,7 @@ export async function recupereLesRecontres(typeCompetition: string, idCompetitio
     urlSearchParams.append("ext_equipe_id", extEquipeId)
     const response = await fetch(`https://www.ffhandball.fr/wp-json/competitions/v1/computeBlockAttributes?${urlSearchParams.toString()}`, {
         method: 'GET',
-        next: {revalidate: 28800}
+        next: {revalidate: 60}
     })
     let data = await response.text();
     const str = Buffer.from(data, 'base64').toString()
