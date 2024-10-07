@@ -44,7 +44,7 @@ export default async function Home({searchParams,}: { searchParams?: { recherche
                                 <AccordionTrigger>
                                     <p className="text-gray-500 mt-5 w-full">
                                         Tu ne trouves pas ton club ?<br/>
-                                        <span className="text-xs">Clique pour afficher la liste des compétitions.</span>
+                                        <span className="text-xs">Cliques pour afficher la liste des compétitions</span>
                                     </p>
 
                                 </AccordionTrigger>
