@@ -4,7 +4,7 @@ import * as cheerio from "cheerio";
 export async function recupereLaCleCFK() {
     let response = await fetch('https://www.ffhandball.fr/', {
         method: 'GET',
-        next: {revalidate: 28800}
+        next: {revalidate: 60}
     });
     let contenu = await response.text();
     const $ = cheerio.load(contenu);
