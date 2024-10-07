@@ -45,7 +45,13 @@ export async function GET(_: NextRequest, {params}: { params: { club: string } }
         }))
     logErreurs(details);
 
-    return Response.json(details.filter(detail => detail.status === "fulfilled").flatMap(detail => detail.value))
+    let data = details.filter(detail => detail.status === "fulfilled").flatMap(detail => detail.value);
+    if(data.length>0){
+        return Response.json(data)
+    }else{
+        return Response.error()
+    }
+
 }
 
 
