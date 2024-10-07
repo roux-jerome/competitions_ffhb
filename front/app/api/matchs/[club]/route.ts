@@ -49,7 +49,9 @@ export async function GET(_: NextRequest, {params}: { params: { club: string } }
     if(data.length>0){
         return Response.json(data)
     }else{
-        return Response.error()
+        return new Response("Pas de données", {
+            status: 404,
+        })
     }
 
 }
